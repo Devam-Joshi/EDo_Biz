@@ -1,0 +1,11 @@
+@media (max-width: 1366px)
+{
+	.auth-logo .auth-logo-dark{position: relative;margin-top: 0;width: 250px;}
+	#wd-sl-main .p-md-5 {padding: 2rem!important;} 
+	.wd-sl-secpart{margin-top: 1.5rem;}
+	.vertical-menu, .navbar-brand-box{width: 215px;}
+	.main-content{margin-left: 215px;}
+	.footer{padding: 15px 30px;}
+	.wd-sl-otherrow .col-md-4, .wd-sl-otherrow .mini-stats-wid{height: auto;}
+	.wd-sl-formcontrols label{font-size: 11px;}
+}
