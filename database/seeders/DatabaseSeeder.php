@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
        $this->call(Users_Seeder::class);
         $this->call(ContentSeeder::class);
         
+        $this->call(TblSerialnumberTableSeeder::class);
     }
 }

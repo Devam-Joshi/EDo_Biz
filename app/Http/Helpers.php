@@ -3,6 +3,7 @@
 use App\DeviceToken;
 use App\PushLog;
 use App\User;
+use App\Models\SerialNo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -187,6 +188,48 @@ function admin_modules()
                 'admin.branch.show',
 
                 'admin.branch.add',
+            ],
+        ],
+        [
+            'route' => 'javascript:;',
+            'name' => __('Account'),
+            'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+            'all_routes' => [
+                // 'admin.account.index',
+                // 'admin.account.show',
+                // 'admin.account.add',
+            ],
+            'child' => [
+                [
+                    'route' =>route('admin.account.index'),
+                    'name' => __('Account'),
+                    'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+                    'all_routes' => [
+                        'admin.account.index',
+                        'admin.account.show',
+                        'admin.account.add',
+                    ],
+                ],
+               
+                [
+                    'route' => route('admin.account-group.index'),
+                    'name' => __('Ac Group'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-indent',
+                    'all_routes' => [
+                        'admin.account-group.index',
+                        'admin.account-group.show',
+                        'admin.account-group.add',
+                    ],
+                ],
+                [
+                    'route' =>route('admin.city.index'),
+                    'name' => __('Cities'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-bullseye',
+                    'all_routes' => [
+                        'admin.city.index',
+                        'admin.city.add',
+                    ],
+                ],
             ],
         ],
         [
@@ -636,4 +679,17 @@ function upload_base_64_img($base64 = "", $path = "uploads/product/")
         }
     }
     return $file;
+}
+
+function getNewSerialNo($type){
+    $billNo=SerialNo::where('name','=',$type)
+                    ->select('prefix','length','financialYear','next_number')
+                    ->get();
+        $next_number=str_pad($billNo[0]->next_number, $billNo[0]->length, "0", STR_PAD_LEFT);
+        return $billNo[0]->prefix.$billNo[0]->financialYear.$next_number;
+  
+}
+
+function increaseSerialNo($type){
+    SerialNo::where('name','=',$type)->increment('next_number',1);
 }

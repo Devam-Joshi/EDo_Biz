@@ -18,7 +18,7 @@
     <script src="{{asset('assets/admin/vendors/general/jquery.validate.min.js')}}" type="text/javascript"></script>
      
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/additional-methods.min.js"></script> -->
-    
+    <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
     @yield('h_style')
     @include('general.header_includes')
 

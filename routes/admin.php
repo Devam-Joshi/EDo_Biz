@@ -55,5 +55,26 @@ Route::group(['middleware' => 'Is_Admin'], function () {
         Route::get('color/listing', 'ColorController@listing')->name('color.listing');
         Route::resource('color', 'ColorController');
 
+        //Account Controller
+        Route::get('account/status_update/{id}', 'AccountController@status_update')->name('account.status_update');
+        Route::match(['get','post'],'account/listing', 'AccountController@listing')->name('account.listing');
+        Route::resource('account', 'AccountController');
+
+        //Account-Group Controller
+        Route::get('account-group/status_update/{id}', 'AccountGroupController@status_update')->name('account-group.status_update');
+        Route::get('account-group/listing', 'AccountGroupController@listing')->name('account-group.listing');
+        Route::resource('account-group', 'AccountGroupController');
+
+        // City Controller
+        Route::get('city/status_update/{id}', 'CityController@status_update')->name('city.status_update');
+        Route::get('city/listing', 'CityController@listing')->name('city.listing');
+        Route::resource('city', 'CityController');
+
+
+
+
+        //===Reports=====
+        Route::get('client-product-association','AccountController@listing')->name('client-product-association');
+        Route::get('partywise-overdue-bills','AccountController@listing')->name('partywise-overdue-bills');
     });
 });

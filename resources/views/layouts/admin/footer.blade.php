@@ -1,11 +1,11 @@
 <script>
     $(function () {
         let url = window.location;
-        {{--        @if(session('error'))--}}
-        {{--        toastr.error('{{session('error')}}');--}}
-        {{--        @elseif(session('success'))--}}
-        {{--        toastr.success('{{session('success')}}');--}}
-        {{--        @endif--}}
+        @if(session('error'))
+        toastr.error('{{session('error')}}');
+        @elseif(session('success'))
+        toastr.success('{{session('success')}}');
+        @endif
         // $('.kt-menu__item  a[href="' + url + '"]').parent('li').parent('ul').parent('div').parent('li').addClass('kt-menu__item--active').addClass('kt-menu__item--open');
         // $('.kt-menu__item  a[href="' + url + '"]').parent('li').addClass('kt-menu__item--active').addClass('kt-menu__item--open');
     });
@@ -23,6 +23,7 @@
         @endif
     });
 </script>
+<script src="http://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
 @yield('f_script')
 @include('general.footer_scripts')
 </body>
