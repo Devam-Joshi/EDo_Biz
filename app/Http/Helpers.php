@@ -4,6 +4,9 @@ use App\DeviceToken;
 use App\PushLog;
 use App\User;
 use App\Models\SerialNo;
+use App\Models\Account;
+use App\Models\Payment;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -228,6 +231,48 @@ function admin_modules()
                     'all_routes' => [
                         'admin.city.index',
                         'admin.city.add',
+                    ],
+                ],
+            ],
+        ],
+        [
+            'route' => 'javascript:;',
+            'name' => __('Payments'),
+            'icon' => 'kt-menu__link-iconfas  fas fa-rupee-sign',
+            'all_routes' => [
+                // 'admin.account.index',
+                // 'admin.account.show',
+                // 'admin.account.add',
+            ],
+            'child' => [
+                [
+                    'route' =>route('admin.payment.inward.index'),
+                    'name' => __('Inward'),
+                    'icon' => 'kt-menu__link-iconfas  fas fa-angle-double-down',
+                    'all_routes' => [
+                        'admin.payment.inward.index',
+                        'admin.payment.inward.show',
+                        'admin.payment.inward.add',
+                    ],
+                ],
+                [
+                    'route' =>route('admin.payment.outward.index'),
+                    'name' => __('Outward'),
+                    'icon' => 'kt-menu__link-iconfas  fas fa-angle-double-up',
+                    'all_routes' => [
+                        'admin.payment.outward.index',
+                        'admin.payment.outward.show',
+                        'admin.payment.outward.add',
+                    ],
+                ],
+                [
+                    'route' => route('admin.payment.transfer.index'),
+                    'name' => __('Transfer'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-exchange-alt',
+                    'all_routes' => [
+                        'admin.payment.transfer.index',
+                        'admin.payment.transfer.show',
+                        'admin.payment.transfer.add',
                     ],
                 ],
             ],
@@ -692,4 +737,69 @@ function getNewSerialNo($type){
 
 function increaseSerialNo($type){
     SerialNo::where('name','=',$type)->increment('next_number',1);
+}
+
+
+function partyCalculateClosing($id,$from=null,$to=null)
+{
+    $account=Account::where('id',$id)->first();
+    $april1=$_ENV['APP_YEAR'];
+    $fromDate=$april1;
+    $toDate=date('Y-m-d');
+
+    if(isset($from,$to) && !empty($from) && !empty($to)){
+        $fromDate=$from;
+        $toDate=$to;
+    }
+
+    $prevDate=date('Y-m-d',strtotime($fromDate.'-1 day'));
+    $totalDebit=Payment::where('party_id',$id)
+                    ->where('txn_type','debit')
+                    ->where('status',1)
+                    ->where('txn_date','>=',$april1)
+                    ->where('txn_date','<=',$toDate)
+                    ->sum('txn_amount');
+
+    $totalCredit=Payment::where('party_id',$id)
+                    ->where('txn_type','credit')
+                    ->where('status',1)
+                    ->where('txn_date','>=',$april1)
+                    ->where('txn_date','<=',$toDate)
+                    ->sum('txn_amount');
+    $acc= Account::where('id',$id)->select('openingBalance','opening_type')->first();
+
+    //=======New Calculation ====
+    
+    if(!empty($acc->openingBalance)){ $opBal=$acc->openingBalance; }else{ $opBal=0;	}
+    if($acc->opening_type=='Dr'){
+        $closingBalance_new = $opBal + ($totalDebit-$totalCredit);
+    }else{
+        $closingBalance_new = $opBal - ($totalDebit-$totalCredit);
+    }
+
+    if($closingBalance_new >= 0 ){
+        $closingType='Dr';
+        
+    }else{
+        $closingType='Cr';
+    }
+
+    $a['opening']=$acc->openingBalance;
+    $a['opening_type']=$acc->opening_type;
+    $a['debitTotal']=$totalDebit;
+    $a['creditTotal']=$totalCredit;
+    $a['closing']=$closingBalance_new;
+    $a['closing_type']=$closingType;
+    $a['showbalance']=accountBalanceView($closingBalance_new,$closingType);
+
+    return $a;
+}
+
+function accountBalanceView($amt,$type){
+    if($type=='Dr'){
+        $html='<span class="text-success p-2 w-100">'.$amt.' '.$type.' <span class="badge badge-success">&darr;<span> </span>';
+    }else{
+        $html='<span class="text-danger p-2 w-100">'.$amt.' '.$type.' <span class="badge badge-danger">&uarr;<span><span>';
+    }
+    return $html;
 }

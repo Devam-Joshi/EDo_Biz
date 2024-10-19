@@ -21,6 +21,7 @@ Route::group(['middleware' => 'Is_Admin'], function () {
     Route::post('/update_password', 'General\GeneralController@update_password')->name('update_password');
     Route::get('/site_settings', 'General\GeneralController@get_site_settings')->name('get_site_settings');
     Route::post('/site_settings', 'General\GeneralController@site_settings')->name('site_settings');
+    
     Route::group(['namespace' => 'Admin'], function () {
         //        User Module
         Route::get('user/listing', 'UsersController@listing')->name('user.listing');
@@ -70,11 +71,34 @@ Route::group(['middleware' => 'Is_Admin'], function () {
         Route::get('city/listing', 'CityController@listing')->name('city.listing');
         Route::resource('city', 'CityController');
 
+        //====Payment/ Financial Routes=====
+        Route::group(['prefix'=>'payment','as'=>'payment.'], function(){
+            //====Common Payment ========
+            Route::resource('/', 'PaymentController');
+            Route::match(['get','post'],'search', 'PaymentController@index');
 
+            //====Inward Payment =========
+            Route::resource('inward', 'PaymentInwardController');
+            Route::match(['get','post'],'inward/listing', 'PaymentInwardController@listing')->name('inward.listing');
+
+            //====Outward Payment =========
+            Route::resource('outward', 'PaymentOutwardController');
+            Route::match(['get','post'],'search', 'PaymentOutwardController@index');
+
+            //=== Payment Transfer ==========
+            Route::resource('transfer', 'TransferController');
+            Route::match(['get','post'],'search', 'TransferController@index');
+
+        });
+                 
 
 
         //===Reports=====
         Route::get('client-product-association','AccountController@listing')->name('client-product-association');
         Route::get('partywise-overdue-bills','AccountController@listing')->name('partywise-overdue-bills');
+    
+        //====AJAX  url=======
+        Route::get('getAccountList/{group}/{name}','AjaxController@AccountList');
+        Route::get('getAccountDetail/{id}','AjaxController@AccountDetail');
     });
 });
