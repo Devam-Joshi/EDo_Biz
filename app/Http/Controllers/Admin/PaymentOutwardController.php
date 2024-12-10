@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Brian2694\Toastr\Facades\Toastr;
 use Auth;
 use session;
-class PaymentInwardController extends WebController
+class PaymentOutwardController extends WebController
 {
     /**
      * Display a listing of the resource.
@@ -32,11 +32,11 @@ class PaymentInwardController extends WebController
 
     public function index()
     {  
-        $data=$this->payment_obj::where('reference_type', 'receipt')->where('reference_id','<',1)->with('accData')->latest()->get();
-        return view('admin.payment.inward.index', [
-            'title' => 'Inward Payment',
+        $data=$this->payment_obj::where('reference_type', 'payment')->where('reference_id','<',1)->with('accData')->latest()->get();
+        return view('admin.payment.outward.index', [
+            'title' => 'Outward Payment',
             'breadcrumb' => breadcrumb([
-                'Inward Payment' => route('admin.payment.inward.index'),
+                'Outward Payment' => route('admin.payment.outward.index'),
             ]),
             'txn' =>$data,
         ]);
@@ -69,8 +69,8 @@ class PaymentInwardController extends WebController
                 $param = [
                     'id' => $value->id,
                     'url' => [
-                        'status' => route('admin.payment.inward.status_update', $value->id),
-                        'edit' => route('admin.payment.inward.edit', $value->id),
+                        'status' => route('admin.payment.outward.status_update', $value->id),
+                        'edit' => route('admin.payment.outward.edit', $value->id),
                        // 'delete' => route('admin.user.destroy', $value->id),
                         //'view' => route('admin.user.show', $value->id),
                     ],
@@ -101,11 +101,11 @@ class PaymentInwardController extends WebController
         $a['bank'] = Account::latest()->whereIn('acGroup',[1,2,8])->where('status','1')->get();
 		$a['payment'] =new Payment();
         $a['nextBill']=getNewSerialNo('payment_receipt');
-        $a['title']='Add Inward Payment';
+        $a['title']='Add Outward Payment';
         $a['breadcrumb']=breadcrumb([
-            'Payment Inward' => route('admin.payment.inward.index')
+            'Payment Outward' => route('admin.payment.outward.index')
         ]);
-        return view('admin.payment.inward.addEditPayment')->with($a);
+        return view('admin.payment.outward.addEditPayment')->with($a);
         
     }
 
@@ -130,18 +130,15 @@ class PaymentInwardController extends WebController
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-
-    try {
-           
-            
+    try {   
             $Acc=$this->account_obj->where('id',$rd->input('account_id'))->select('current_balance')->first();
             $BnkAc=$this->account_obj->where('id',$rd->input('bankAcID'))->select('current_balance')->first();
         
             $balance=($Acc->current_balance - $rd->input('txn_amount'));
             $Bankbalance=($BnkAc->current_balance + $rd->input('txn_amount'));
-            $payType='receipt';
-            $txnType='debit';
-            $txnBankType='credit';
+            $payType='payment';
+            $txnType='credit';
+            $txnBankType='debit';
 
             $date = Carbon::now();
             $sNo=getNewSerialNo('payment_receipt');
@@ -189,7 +186,7 @@ class PaymentInwardController extends WebController
 
                 Toastr::success('Payment done successfully', 'Success');
                 //success_session('Payment done successfully');
-                return redirect()->route('admin.payment.inward.index');
+                return redirect()->route('admin.payment.outward.index');
             }else{
 
             }
@@ -223,16 +220,16 @@ class PaymentInwardController extends WebController
      */
     public function edit($id)
     {
-        $a['title'] = 'Edit Inward Payment';
+        $a['title'] = 'Edit Outward Payment';
         $a['breadcrumb'] = breadcrumb([
-                    'Payment' => route('admin.payment.inward.index'),
-                    'edit' => route('admin.payment.inward.edit', $id),
+                    'Payment' => route('admin.payment.outward.index'),
+                    'edit' => route('admin.payment.outward.edit', $id),
                 ]);
         $a['bank'] = $this->account_obj->orderBy('name')->whereIn('acGroup',[1,2,8])->get();
 	    $a['payment'] = $this->payment_obj->where('id',$id)->with('accData')->latest()->first();
         $a['nextBill']=$a['payment']->reference_no;
         Toastr::success('Please update carefully', 'Success');        
-        return view('admin.payment.inward.addEditPayment')->with($a);   
+        return view('admin.payment.outward.addEditPayment')->with($a);   
     }
 
 
@@ -263,9 +260,9 @@ class PaymentInwardController extends WebController
         
         try{
 
-            $payType='receipt';
-            $txnType='debit';
-            $txnBankType='credit';
+            $payType='payment';
+            $txnType='credit';
+            $txnBankType='debit';
     
             $fLogs=$this->payment_obj->find($id);
             $fLogs->txn_date=general_date($rd->input('txn_date'));
@@ -299,7 +296,7 @@ class PaymentInwardController extends WebController
                 $fRLog->save();
                 
                 Toastr::success('Payment updated successfully', 'Success');
-                return redirect()->route('admin.payment.inward.index');
+                return redirect()->route('admin.payment.outward.index');
             }else{
                 Toastr::error('Unable to update the Payment', 'Error');
             } 

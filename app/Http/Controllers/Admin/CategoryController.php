@@ -191,7 +191,7 @@ class CategoryController extends WebController
 
     public function listing(Request $request)
     {
-        $data = $this->parent_cat_obj::all();
+        $data = $this->category_obj::all();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('status', function ($row) {
@@ -208,16 +208,27 @@ class CategoryController extends WebController
                 return "-";
             })
             ->addColumn('action', function ($row) {
-                $param = [
-                    'id' => $row->id,
-                    'url' => [
-                        'delete' => route('admin.category.destroy', $row->id),
-                        'edit' => route('admin.category.edit', $row->id),
-                        // 'view' => route('admin.news.show', $row->id),
-                    ]
-                ];
-                return $this->generate_actions_buttons($param);
+                return '           
+           
+                                     <div class="btn-group">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="'.route('admin.category.show' , $row->id).'">View</a></li>
+                                            <li><a href="'.route('admin.category.edit' , $row->id).'">Edit</a></li>
+                                            <li><a href="">Config</a></li>
+                                            <li><a href="'.route('admin.category.destroy' , $row->id).'">Delete</a></li>
+                                            <li role="separator" class="divider"></li>
+                                            <li><a href="#">Invoice</a></li>
+                                            <li><a href="#">Refill</a></li>
+                                        </ul>
+                                    </div>
+                                     
+                                     
+                                     ';
             })
+           
             ->rawColumns(["status", "action"])
             ->make(true);
     }

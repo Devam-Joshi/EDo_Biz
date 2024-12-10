@@ -41,7 +41,8 @@ Route::group(['middleware' => 'Is_Admin'], function () {
          Route::get('role/status_update/{id}', 'RoleController@status_update')->name('role.status_update');
          Route::get('role/listing', 'RoleController@listing')->name('role.listing');
          Route::resource('role', 'RoleController');
-         //Branch Controller
+         
+         //Product Controller
          Route::get('product/status_update/{id}', 'ProductController@status_update')->name('product.status_update');
          Route::get('product/listing', 'ProductController@listing')->name('product.listing');
          Route::resource('product', 'ProductController');
@@ -71,6 +72,19 @@ Route::group(['middleware' => 'Is_Admin'], function () {
         Route::get('city/listing', 'CityController@listing')->name('city.listing');
         Route::resource('city', 'CityController');
 
+
+        //====Inquery ======================
+        Route::resource('inquiry-new', 'InquiryNewController');
+        Route::get('newinquiry-to-inquiry/{id}','InqueryController@convertToInquiry');
+        Route::post('inquery-conversion-store/{id}','InqueryController@convertInquirySave')->name('inquery-conversion-store');
+        Route::resource('inquiry', 'InqueryController');
+        Route::resource('sale-order', 'SaleOrderController');
+        Route::get('convert-inquiry-saleorder/{id}','SaleOrderController@convertInqueryToOrder');
+        Route::resource('sale', 'SaleController');
+        Route::get('saleorder-to-salebill/{id}','SaleController@convertOrderToBill');
+        Route::get('saleorder-to-salebill-ready/{id}','SaleController@convertOrderToReadyBill');
+        Route::resource('purchase-order', 'PurchaseOrderController');
+        Route::resource('purchase', 'PurchaseController');
         //====Payment/ Financial Routes=====
         Route::group(['prefix'=>'payment','as'=>'payment.'], function(){
             //====Common Payment ========
@@ -83,22 +97,36 @@ Route::group(['middleware' => 'Is_Admin'], function () {
 
             //====Outward Payment =========
             Route::resource('outward', 'PaymentOutwardController');
-            Route::match(['get','post'],'search', 'PaymentOutwardController@index');
+            Route::match(['get','post'],'outward/listing', 'PaymentOutwardController@index')->name('outward.listing');
 
             //=== Payment Transfer ==========
-            Route::resource('transfer', 'TransferController');
-            Route::match(['get','post'],'search', 'TransferController@index');
+            Route::resource('transfer', 'PaymentTransferController');
+            Route::match(['get','post'],'search', 'PaymentTransferController@index')->name('transfer.listing');
 
         });
-                 
 
+        //======Qr Code Not Generate ===          
+        Route::get('generate_stock_qrcode','AjaxController@GenerateQrString')->name('generate_stock_qrcode');
 
         //===Reports=====
         Route::get('client-product-association','AccountController@listing')->name('client-product-association');
         Route::get('partywise-overdue-bills','AccountController@listing')->name('partywise-overdue-bills');
-    
+        
         //====AJAX  url=======
         Route::get('getAccountList/{group}/{name}','AjaxController@AccountList');
         Route::get('getAccountDetail/{id}','AjaxController@AccountDetail');
+        Route::get('getLastprice/{type}/{partyID?}/{itemids?}','AjaxController@lastItemSalePrice');
+        Route::get('getAccountPrevPayment/{type}/{partyID?}/{itemids?}','AjaxController@accPrevPayment');
+        Route::get('search-account-newinquery/{group}/{keyword}','AjaxController@AccNewInqSearch');
+
+        //=== Ajax Product Search ==
+        Route::get('search-prod-name/{name}','AjaxController@searchProdName');
+        Route::get('search-prod-qr/{qrcode}/{catall?}','AjaxController@searchProdQrCode');
+        Route::get('product-all-active-variants/{id}/{catid}','AjaxController@searchProdVariants');
+
+
+        //=====Other Action====
+        Route::get('action/{action}/{id?}','AjaxController@multiAction');
+        
     });
 });

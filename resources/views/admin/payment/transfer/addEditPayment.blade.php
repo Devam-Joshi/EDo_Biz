@@ -4,114 +4,171 @@
     @lang('translation.Form_Layouts')
 @endsection 
 @section('content')
+<style>
+    .SchListDiv{
+	  display:none;
+      position: absolute;
+      background: #fdf4f1;
+      border: solid 2px #652001;
+      border-radius: 5px;
+      margin-top: 30px;
+      margin-left: 9px;
+      z-index: 9;
+      box-shadow: 3px 9px 10px 6px #1c1c1d;
+      max-height: 500px;
+      overflow-x: scroll;
+      padding: 10px;
+      min-width:90%;
+
+		}
+		.SchListDiv p{
+		 margin: 0.5px;
+		 border-bottom: solid 1px #ced4da;
+		}
+		.SchListDiv p:hover{
+		background: #57595a;
+		cursor: pointer;
+		font-weight: bold;
+		color: #fff;
+		}
+
+#paymentForm .form-group{
+    margin-top:10px;
+}
+</style>
 @include('components.breadcum')
 <div class="row">
     <div class="col-12">
     </div>
-    <div class="card">
+    <div class="card" id="paymentForm">
         {!! get_error_html($errors) !!}
             <div class="card-header">
             </div>
             <!-- /.card-header -->
                 @if(isset($payment->id) && $payment->id!='' )
-                    <form role="form" action="{{ route('admin.payment.update', $payment->id) }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <form role="form" action="{{ route('admin.payment.transfer.update', $payment->id) }}" method="post" enctype="multipart/form-data" autocomplete="off">
                     @method('PUT')
                 @else
-                    <form role="form" action="{{ route('admin.payment.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <form role="form" action="{{ route('admin.payment.transfer.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
                 @endif
                 @csrf
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-9 p-3">
+                            <div class="col-md-8 p-3">
                                 <div class="row">
-                                    <div class="col-md-2">
-                                        <div class="form-group text-center">
-                                            <input type="radio" class="form-control"  name="paymentType"  value="payment" @if(isset($payment['reference_type']) && $payment['reference_type']=='payment') checked @elseif(!isset($payment['reference_type'])) checked @else '' @endif style="height:30px"> Payment
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group text-center">
-                                            <input type="radio"  name="paymentType" value="receipt" class="form-control" @if(isset($payment['reference_type']) && $payment['reference_type']=='receipt'): checked ? '' @endif style="height:30px"> Receive
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group text-center">
-                                            <input type="radio"  name="paymentType" value="expenses" class="form-control" @if(isset($payment['reference_type']) && $payment['reference_type']=='expenses'): checked ? '' @endif style="height:30px"> Expenses
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group text-center">
-                                            <label>Pay/Receipt No.<span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" name="invoice_No" value="{{ old('invoice_No',$nextBill)}}" readonly style="height:30px">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group ">
-                                            <label>Date <span class="text-danger">*</span></label>
-                                            @php if(isset($payment['txn_date'])){$date=$payment['txn_date'];}else{$date=date('Y-m-d'); }@endphp
-                                                <input type="date" class="form-control" name="txn_date" value="{{ date('Y-m-d',strtotime(old('txn_date',$date)))}}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 bg-light">
                                         <div class="form-group">
-                                            <label>Bank<span class="text-danger">*</span><em class="float-right text-success" id="bankCbal"></em></label>
-                                            <select class="select2 form-control" name="bankAcID" id="bankAcID"  required>
+                                            Bill No : 
+                                            <input type="hidden"  name="paymentType" value="receipt" class="form-control" checked>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 ">
+                                        <div class="text-center bg-light p-2">
+                                            <span class="h5 text-info rounded p-2">{{$nextBill}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row"> 
+                                    <div class="col-md-4 pt-2 bg-light">
+                                        Payment Date <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group ">
+                                        @php if(isset($payment->txn_date)){$date=$payment->txn_date;}else{$date=date('Y-m-d'); }@endphp
+                                        <input type="date" class="form-control" name="txn_date" value="{{ date('Y-m-d',strtotime(old('txn_date',$date)))}}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">   
+                                    <div class="col-md-4 bg-light">
+                                        Payer Account<span class="text-danger">* </span><em class="float-right text-success" id="bankCbal"></em>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <select class="select2 form-control" name="payer_id" id="bankAcID"  required>
                                                 <option value="">--Select Bank---</option>
                                                 @foreach($bank as $bnk)
-                                                <option value="{{$bnk->id}}" @php if(old('bankAcID',$payment->payment_bank_id)==$bnk->id){echo 'selected';}else{} @endphp>{{$bnk->name}}</option>
+                                                <option value="{{$bnk->id}}" @php if(old('payer_id',$payment->payer_party_id)==$bnk->id){echo 'selected';}else{} @endphp>{{$bnk->name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>Payment Mode</label>
-                                            <select class="select2 form-control" name="txn_method" id="txn_method" >
-                                                <option value="">--Select Mode---</option>
-                                                    <option value="CASH" @php if(old('txn_method',$payment->txn_method)=='cash'){echo 'selected';}else{} @endphp>CASH</option>
-                                                    <option value="CHEQUE" @php if(old('txn_method',$payment->txn_method)=='CHEQUE'){echo 'selected';}else{} @endphp>CHEQUE</option>
-                                                    <option value="NEFT" @php if(old('txn_method',$payment->txn_method)=='NEFT'){echo 'selected';}else{} @endphp>NEFT</option>
-                                                    <option value="IMPS" @php if(old('txn_method',$payment->txn_method)=='IMPS'){echo 'selected';}else{} @endphp>IMPS</option>
-                                                    <option value="UPI" @php if(old('txn_method',$payment->txn_method)=='UPI'){echo 'selected';}else{} @endphp>UPI</option>
-                                                    <option value="other" @php if(old('txn_method',$payment->txn_method)=='other'){echo 'selected';}else{} @endphp>other</option>
-                                            </select>
-                                        </div>
+                                </div>
+                                <div class="row">   
+                                    <div class="col-md-4 bg-light">
+                                        <label>Referrence No.</label>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-8">
                                         <div class="form-group">
-                                            <label>Referrence No.</label>
                                             <input type="text" class="form-control" name="payment_referrence_no" value="{{ old('payment_referrence_no',$payment->payment_referrence_no)}}">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-4 bg-light">
                                         <div class="form-group">
                                             <label>Account Search <span class="text-danger">*</span></label>
-                                            <input id="acountSearch" name="searchSupplier" class="form-control" placeholder="Type name/code">
                                         </div>
-                                    </div>
-                                    <div class="col-md-9">
-                                    <div class="form-group">
-                                        <label>Account Detail</label>
-                                        <input id="supplier_id" name="supplier_id" class="form-control" value="{{old('supplier_id',$payment->party_id)}}" hidden>
+                                    </div>  
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <input id="acountSearch" name="searchSupplier" class="form-control" placeholder="Type name/code">
+                                            <input id="account_id" name="receiver_id" class="form-control" value="{{old('receiver_id',$payment->party_id)}}" hidden>
+                                        </div>
+                                        <div class="SchListDiv col-md-6" id="srchAcListDiv">
+                                            <div id="srchAcList">
+                                                <em disabled>--- no data found---</em>
+                                            </div>
+                                        </div>
                                         <div id="showAcData">
                                             @if(isset($payment->id))
-                                            
-                                            <span class="pull-left"><strong>{{$payment->accData->name}}</strong> <br>{{$payment->accData->phone.'('.$payment->accData->email.')'}}<br>Address:-{{$payment->accData->address.' '.$payment->accData->city.' '.$payment->accData->state}}</span>
-                                            <span class="pull-right"><strong>{{$payment->accData->acCode}}<br>Bal: </strong></span>
+                                            <span class="pull-left"><strong>{{$payment->receiverData->name}}</strong> <br>{{$payment->receiverData->phone.'('.$payment->receiverData->email.')'}}<br>Address:-{{$payment->receiverData->address.' '.$payment->receiverData->city.' '.$payment->receiverData->state}}</span>
+                                            <span class="pull-right"><strong>{{$payment->receiverData->acCode}}</strong></span>
                                             @endif
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="row">   
+                                    <div class="col-md-4 bg-light">
+                                        <label>Amount (&#8377;)</label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                        <input type="text" class="form-control" name="txn_amount" id="txn_amount" value="{{old('txn_amount',$payment->txn_amount)}}" onkeyup="calculate()">
+                                        </div>
+                                    </div>
+                                    @if(empty($payment))
+                                    <div class="col-md-4 billwiseAdjustment pt-3">
+                                        <input type="checkbox" class="form-check-input " value="billwiseAdjustment"> Bill Adjustment
+                                    </div> 
+                                    @endif
+                                </div>
+                                <div class="row">   
+                                    <div class="col-md-4 bg-light">
+                                        <label>Balance/Outstanding (&#8377;)</label>
+                                    </div>
+                                    <div class="col-md-8 cBalAmt">
+                                        <div class="form-group">
+                                        <input type="texr" class="form-control" id="currentBalance" value="{{old('currentBalance',$payment->party_prevBal)}}" name="currentBalance" readonly>
+                                        </div>
+                                        <div class="balAmt">
+                                            <input type="text" class="form-control" name="balanceAmount" id="balanceAmount" value="{{ old('balanceAmount',$payment->party_currentBal)}}" disabled>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="SchListDiv col-md-6" id="srchAcListDiv">
-                                    <div id="srchAcList">
-                                    <em disabled>--- no data found---</em>
+                                <div class="row">   
+                                    <div class="col-md-4 bg-light">
+                                        <label>Remark</label>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <textarea class="form-control" name="remark" id="remark">{{ old('remark',$payment->remark)}}</textarea>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row mt-3" id="srchPd">
-                                <div class="col-md-3 cBalAmt">
+                                <div class="row mt-3 " id="srchPd">
+                                    
+                                <!--<div class="col-md-3 cBalAmt">
                                     <div class="form-group">
                                         <label>Total Balance <span class="text-danger">*</span></label>
                                         <input class="form-control" id="currentBalance" value="{{old('currentBalance',$payment->party_prevBal)}}" name="currentBalance" readonly>
@@ -134,10 +191,10 @@
                                         <label>Remark</label>
                                         <input type="text" class="form-control" name="remark" id="remark" value="{{ old('remark',$payment->remark)}}">
                                     </div>
-                                </div>
+                                </div>-->
                             </div>
                         </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-md-12 bg-light border shadow prevhistory">
                                         <center> Payment History</center>
@@ -172,13 +229,14 @@
 </div>
 @endsection
 @section('script')
+<script>
 /*=======Search Account/customer Data=======*/
 	$('#acountSearch').on('keyup', function(){
 		var nameKey = $(this).val();
 		var type= '*';
 		if(nameKey.length>=3){
 		$('#srchAcListDiv').show(500);
-		$.getJSON("{{url('getAccountList')}}/" +type+'/'+nameKey , function(data){
+		$.getJSON("{{url('admin/getAccountList')}}/" +type+'/'+nameKey , function(data){
 			if(data.length>=1){
 			var listData = $('#srchAcList').empty();
 			$.each(data, function(key, value){
@@ -196,11 +254,11 @@
 
 	function getDetail(id)
 	 {
-		$.getJSON("{{url('getAccountDetail')}}/"+id, function(d){
-			var acDetail='<span class="pull-left"><strong>'+d[0].name+'</strong><br>'+d[0].phone+'('+d[0].email+')<br>Address:-'+d[0].address+' '+d[0].city+' '+d[0].state+'</span><span class="pull-right"><strong>'+d[0].acCode+'<br>Bal: '+d[0].current_balance+'</strong></span>';
+		$.getJSON("{{url('admin/getAccountDetail')}}/"+id, function(d){
+			var acDetail='<span class="pull-left"><strong>'+d.name+'</strong><br>'+d.phone+'('+d.email+')<br>Address:-'+d.address+' '+d.city+' '+d.state+'</span><div class="col-12"><strong>Balance: '+d.showbalance+'</strong></div>';
 			$('#showAcData').html(acDetail);
-			$('input[name ="supplier_id"]').val(id);
-      $('input[name ="currentBalance"]').val(d[0].current_balance);
+			$('#account_id').val(id);
+      $('input[name ="currentBalance"]').val(d.current_balance);
 			$('#srchAcListDiv').hide();
 
 		});
@@ -210,8 +268,8 @@
 	 }
 
 	function prevHistory(id){
-		  var txnType='payment|receipt|expenses';
-		$.getJSON("{{url('getLastprice')}}/payment/"+id+"/"+txnType, function(rd){
+		  var txnType='transfer';
+		$.getJSON("{{url('admin/getAccountPrevPayment')}}/payment/"+id+"/"+txnType, function(rd){
 		  var $tr='';
 				if(rd.length>=1){
 			$.each(rd, function(key, value){
@@ -231,7 +289,7 @@
 	function calculate(){
 		var paymentType=$('input[name=paymentType]:checked').val();
 		var totalBalance =0;txn_amount=0; BalAmount=0;
-     totalBalance+=$('input[name ="currentBalance"]').val();
+        totalBalance+=$('input[name ="currentBalance"]').val();
 		 txn_amount+=$('input[name ="txn_amount"]').val();
 		 BalAmount=parseFloat(totalBalance)-parseFloat(txn_amount);
 		 $('input[name ="balanceAmount"]').val(BalAmount);
@@ -240,7 +298,7 @@
 
 	$('form').submit(function () {
 		var billAmout=$('input[name ="txn_amount"]').val();;
-    var AccID=$('input[name ="supplier_id"]').val();
+    var AccID=$('input[name ="account_id"]').val();
 
 		if(AccID=='' || AccID<=0){
 			alert("Please select customer");
@@ -273,9 +331,9 @@ $('#bankAcID').on('change', function() {
 bankCurrentBal();
 calculate();
 
-
+$('.cBalAmt,.balAmt').hide();
 @if(isset($payment->id))
- getDetail({{$payment->accData->id}});
+ getDetail({{$payment->receiverData->id}});
  $('.cBalAmt,.balAmt').hide();
 @endif
 </script>

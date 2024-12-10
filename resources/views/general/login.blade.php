@@ -3,7 +3,7 @@
 @section('h_style')
 <style>
         .login_bg_main {
-            background-color: #B857E5 !important;
+            background-color: #fff  !important;
           
         }
         .admin_logo_size{
@@ -12,6 +12,20 @@
     padding: 10px;
     margin-top: 20px;
     height: inherit;
+}
+.kt-login__container{
+    width: 430px;
+    margin: 0 auto;
+    border: solid 2px #fff;
+    border-radius: 10px 50px;
+    padding: 5px;
+    background: #1aa79c;
+    box-shadow: 0px 0px 16px 0px #000;
+}
+
+::placeholder {
+  color: red;
+  opacity: 1; /* Firefox */
 }
     </style>
 @endsection

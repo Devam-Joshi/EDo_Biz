@@ -1,5 +1,9 @@
 
 @import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap");
+.bglight1{
+  background-color: #cfeeff;
+}
+
 #page-topbar {
   position: fixed;
   top: 0;
@@ -332,7 +336,7 @@ body[data-layout="horizontal"] .footer {
     font-size: 1rem; }
   #sidebar-menu ul li a {
     display: block;
-    padding: .625rem 1.5rem;
+    padding: .625rem 0.6rem;
     color: #545a6d;
     position: relative;
     font-size: 13px;
@@ -357,7 +361,7 @@ body[data-layout="horizontal"] .footer {
   #sidebar-menu ul li ul.sub-menu {
     padding: 0; }
     #sidebar-menu ul li ul.sub-menu li a {
-      padding: .4rem 1.5rem .4rem 3.5rem;
+      padding: .4rem 1.0rem .4rem 1.5rem;
       font-size: 13px;
       color: #545a6d; }
       #sidebar-menu ul li ul.sub-menu li a:hover {

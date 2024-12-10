@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class SerialNo extends Model
 {
-	protected $table = 'tbl_serialNumber';
+	protected $table = 'tbl_serialnumber';
     
 }

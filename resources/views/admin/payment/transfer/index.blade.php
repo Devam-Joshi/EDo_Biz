@@ -18,7 +18,7 @@
         <div class="card-body">
             <div class="mb-2 text-right">
                 <div class="wd-sl-modalbtn">
-                    <a href="{{route('admin.payment.inward.create')}}">
+                    <a href="{{route('admin.payment.transfer.create')}}">
                         <button type="button" class="btn btn-primary waves-effect waves-light"> Add
                         </button>
                     </a>
@@ -44,7 +44,7 @@
                                         <tr>
                                             <td>{{$i}}</td>
                                             <td>{{ $tx->reference_no}}</td>
-                                            <td class="text-left"><a href="{{ route('admin.account.show', $tx->party_id) }}">{{ $tx->accData->name }}</a></td>
+                                            <td class="text-left"><a href="{{ route('admin.account.show', $tx->receiver_party_id) }}">{{ $tx->receiverData->name }}</a></td>
                                             <td>{{ date('d-m-Y',strtotime($tx->txn_date))}}</td>
                                             <td>{{ $tx->txn_amount}}</td>
                                             <td>{{ $tx->reference_type}}</td>
@@ -52,7 +52,7 @@
                                                 <a href="{{ url('admin/print-receipt/'.$tx->id) }}" target="_blank" class="btn-sm btn-success">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
-                                                <a href="{{ route('admin.payment.inward.edit', $tx->id) }}" class="btn-sm btn-info">
+                                                <a href="{{ route('admin.payment.transfer.edit', $tx->id) }}" class="btn-sm btn-info">
                                                     <i class="fa fa-pen" aria-hidden="true"></i>
                                                 </a>
                                                <button class="btn-sm btn-danger" type="button" onclick="deleteItem({{ $tx->id }})">
@@ -95,7 +95,7 @@
             "order": [
                 [0, "DESC"]
             ],
-            "ajax": "{{route('admin.payment.outward.listing')}}",
+            "ajax": "{{route('admin.payment.inward.listing')}}",
             "columns": [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',

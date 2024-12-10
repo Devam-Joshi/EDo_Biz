@@ -1,7 +1,5 @@
 @extends('layouts.master')
-@section('title') 
-    @lang('translation.Data_Tables') 
-@endsection
+@section('title') @lang('translation.Data_Tables') @endsection
 @section('css')
 
 <!-- DataTables -->
@@ -15,40 +13,34 @@
 <div class="row">
     <div class="col-12">
         {!! success_error_view_generator() !!}
-
     </div>
     <div class="card">
         <div class="card-body">
             <div class="mb-2 text-right">
                 <div class="wd-sl-modalbtn">
-                    <a href="{{route('admin.payment.create')}}">
+                    <a href="{{route('admin.payment.inward.create')}}">
                         <button type="button" class="btn btn-primary waves-effect waves-light"> Add
                         </button>
                     </a>
                 </div>
             </div>
             <div class="table-responsive ">
-            <table id="example1" class="table table-bordered table-striped text-center table-responsive-xl">
-                                    <thead>
-                                    <tr>
-                                        <th>S.no</th>
-                                        <th>RefNo</th>
-                                        <th>Name</th>
-                                        <th>Date</th>
-                                        <th>Amount</th>
-                                        <th>Type</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                    </thead>
-
-                                    <tfoot>
-
-                                    </tfoot>
-                                    <tbody>
-                                      @php $i=1; @endphp
+                <table id="listResults" class="table dt-responsive mb-4  nowrap w-100 mb-">
+                    <thead>
+                    <tr>
+                        <th>S.no</th>
+                        <th>RefNo</th>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @php $i=1; @endphp
                                     @if(count($txn)>=1)
                                     @foreach($txn as $tx)
-
                                         <tr>
                                             <td>{{$i}}</td>
                                             <td>{{ $tx->reference_no}}</td>
@@ -60,7 +52,7 @@
                                                 <a href="{{ url('admin/print-receipt/'.$tx->id) }}" target="_blank" class="btn-sm btn-success">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
-                                                <a href="{{ route('admin.payment.edit', $tx->id) }}" class="btn-sm btn-info">
+                                                <a href="{{ route('admin.payment.outward.edit', $tx->id) }}" class="btn-sm btn-info">
                                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                                 </a>
                                                <button class="btn-sm btn-danger" type="button" onclick="deleteItem({{ $tx->id }})">
@@ -79,9 +71,8 @@
                                       <td colspan="6" class="text-center">---No Data found for given criteria---</td>
                                     </tr>
                                     @endif
-                                    </tbody>
-
-                                </table>
+                    </tbody>
+                </table>
 
             </div>
         </div>
@@ -98,13 +89,13 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        oTable = $('#listResults').DataTable({
+        oTable = $('#listResultseed').DataTable({
             "processing": true,
             "serverSide": true,
             "order": [
                 [0, "DESC"]
             ],
-            "ajax": "{{route('admin.branch.listing')}}",
+            "ajax": "{{route('admin.payment.inward.listing')}}",
             "columns": [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
@@ -112,17 +103,22 @@
                     sortable: true
                 },
                 {
+                    "data": "id",
+                    searchable: false,
+                    sortable: false
+                },
+                {
+                    "data": "id",
+                    searchable: true,
+                    sortable: false
+                },
+                {
+                    "data": "date",
+                    searchable: true,
+                    sortable: false
+                },
+                {
                     "data": "name",
-                    searchable: true,
-                    sortable: false
-                },
-                {
-                    "data": "address",
-                    searchable: true,
-                    sortable: false
-                },
-                {
-                    "data": "status",
                     searchable: true,
                     sortable: false
                 },
@@ -132,9 +128,9 @@
                     sortable: false
                 }
             ]
+        }).on( 'xhr.dt', function (e, settings, techNote, message) {
+            console.log(message);
         });
     });
-
-    
 </script>
 @endsection

@@ -49,7 +49,7 @@
                     <form role="form" action="{{ route('admin.payment.outward.update', $payment->id) }}" method="post" enctype="multipart/form-data" autocomplete="off">
                     @method('PUT')
                 @else
-                    <form role="form" action="{{ route('admin.payment.inward.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <form role="form" action="{{ route('admin.payment.outward.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
                 @endif
                 @csrf
                     <div class="card-body">
@@ -276,14 +276,15 @@
 			$('#account_id').val(id);
             $('input[name ="currentBalance"]').val(d.current_balance);
 			$('#srchAcListDiv').hide();
+
 		});
 
-        //=====previous price of item for party===========
+    //=====previous price of item for party===========
 		prevHistory(id);
 	 }
 
 	function prevHistory(id){
-		var txnType='receipt';
+		  var txnType='payment|expenses';
 		$.getJSON("{{url('admin/getAccountPrevPayment')}}/payment/"+id+"/"+txnType, function(rd){
 		  var $tr='';
 				if(rd.length>=1){
