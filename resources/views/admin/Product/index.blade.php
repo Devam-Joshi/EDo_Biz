@@ -60,7 +60,7 @@
             "order": [
                 [0, "DESC"]
             ],
-            "ajax": "{{route('admin.branch.listing')}}",
+            "ajax": "{{route('admin.product.listing')}}",
             "columns": [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
@@ -73,7 +73,7 @@
                     sortable: false
                 },
                 {
-                    "data": "address",
+                    "data": "code",
                     searchable: true,
                     sortable: false
                 },

@@ -16,7 +16,7 @@
 
 .kt-login.kt-login--v2 .kt-login__wrapper .kt-login__container .kt-login__logo {
     text-align: center;
-    margin: 0 auto 4rem auto;
+    margin: 0 auto 2rem auto;
 }
 
 .kt-login.kt-login--v2 .kt-login__wrapper .kt-login__container .kt-login__head {
@@ -39,7 +39,8 @@
 }
 
 .kt-login.kt-login--v2 .kt-login__wrapper .kt-login__container .kt-form {
-    margin: 4rem auto;
+    margin: 2rem auto;
+    padding:0 2rem;
 }
 
 .kt-login.kt-login--v2 .kt-login__wrapper .kt-login__container .kt-form .input-group {
@@ -54,8 +55,9 @@
     padding-left: 1.5rem;
     padding-right: 1.5rem;
     margin-top: 1.5rem;
-    background: rgba(67, 34, 167, 0.4);
-    color: #fff;
+    background: rgb(244 243 249 / 48%);
+    color: #000;
+    font-size: 16px;
 }
 
 .kt-login.kt-login--v2 .kt-login__wrapper .kt-login__container .kt-form .form-control::-moz-placeholder {
@@ -246,4 +248,10 @@
     .kt-login.kt-login--v2 .kt-login__wrapper .kt-login__container .kt-login__account {
         margin-top: 1.5rem;
     }
+}
+
+.login_bg_main{
+    background: url(https://img.freepik.com/free-vector/halftone-style-clean-modern-background-with-smooth-blend_1017-53613.jpg);
+    background-size: cover;
+
 }

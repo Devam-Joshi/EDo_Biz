@@ -1,9 +1,9 @@
 @extends('layouts.master')
-
 @section('content')
-@section('title')
-@lang('translation.Form_Layouts')
-@endsection @section('content')
+    @section('title')
+    @lang('translation.Form_Layouts')
+@endsection 
+@section('content')
 @include('components.breadcum')
 <div class="row">
     <div class="col-12">
@@ -11,13 +11,14 @@
     <div class="card">
         <div class="card-body">
             @if(isset($data) && !empty($data))
-            <form class="" name="main_form" id="main_form" method="post" action="{{route('admin.category.update',$data->id)}}">
+                <form class="" name="main_form" id="main_form" method="post" action="{{route('admin.category.update',$data->id)}}">
                 @method('PATCH')
-                @else
+            @else
                 <form class="" name="main_form" id="main_form" method="post" action="{{route('admin.category.store')}}">
-                    @endif
-                    {!! get_error_html($errors) !!}
-                    @csrf
+            @endif
+
+                {!! get_error_html($errors) !!}
+                @csrf
                     <div class="row m-2">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -32,7 +33,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                     <div class="col-md-12 mb-3">
                         <h5>All Categories</h5>

@@ -13,7 +13,6 @@
 <div class="row">
     <div class="col-12">
         {!! success_error_view_generator() !!}
-
     </div>
     <div class="card">
         <div class="card-body">
