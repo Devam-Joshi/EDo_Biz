@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-
+use App\Models\Permission;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use SoftDeletes;
+    use SoftDeletes,HasRoles;
 
     protected $guarded = [];
     protected $hidden = ['password', 'remember_token'];
@@ -95,6 +96,5 @@ class User extends Authenticatable
             ->orWhere('name', 'like', "%$search%")
             ->orWhere('username', 'like', "%$search%");
     }
-
 
 }

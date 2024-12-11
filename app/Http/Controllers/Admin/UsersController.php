@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\WebController;
 use App\User;
+use App\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
+use App\Models\Permission;
 class UsersController extends WebController
 {
     public function index()
@@ -46,7 +47,7 @@ class UsersController extends WebController
                 $param = [
                     'id' => $value->id,
                     'url' => [
-                        'status' => route('admin.user.status_update', $value->id),
+                        'status' => route('admin.user.listing', $value->id),
                         'edit' => route('admin.user.edit', $value->id),
                         'delete' => route('admin.user.destroy', $value->id),
                         //'view' => route('admin.user.show', $value->id),
@@ -132,8 +133,8 @@ class UsersController extends WebController
     {
         $data = User::find($id);
         if ($data) {
-            
-             $request->validate([
+
+            $request->validate([
                 'first_name' => ['required', 'max:255'],
                 'last_name' => ['required', 'max:255'],
                 //'country_code' => ['required'],
@@ -149,11 +150,11 @@ class UsersController extends WebController
                     $profile_image = $up;
                 }
             }
-           $userdata = [
-                 'email' => $request->email,
-                 'profile_image' => $profile_image,
+            $userdata = [
+                'email' => $request->email,
+                'profile_image' => $profile_image,
                 'name' => $request->first_name . ' ' . $request->last_name,
-           ];
+            ];
             $data->update($userdata);
             success_session('user updated successfully');
         } else {
@@ -163,4 +164,54 @@ class UsersController extends WebController
     }
 
 
+    public function create()
+    {
+        $permissions = Permission::all(); // Fetch all permissions
+        $branches = Branch::all();
+        return view('admin.user.create', compact('permissions','branches'));
+    }
+
+    public function save(Request $request)
+    {
+
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'username' => 'required|string|max:255|unique:users,username',
+        //     'password' => 'required|string|min:6',
+        //     'email' => 'required|email|max:255|unique:users,email',
+        //     'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'statusData' => 'required|in:active,inactive',
+        //     'type' => 'required|in:admin,user',
+        //     'branch' => 'required',
+        //     'permissions' => 'array',
+        //     'permissions.*' => 'exists:permissions,name',
+        // ]);
+
+        if ($request->hasFile('profile_image')) {
+            $profile_image = $request->profile_image;
+            $up = upload_file('profile_image', 'user_profile_image');
+            if ($up) {
+                un_link_file($profile_image);
+                $profile_image = $up;
+            }
+        }
+        $user = User::create([
+            'name' => $request->input('name'),
+            'username' => $request->input('username'),
+            'password' => bcrypt($request->input('password')),
+            'email' => $request->input('email'),
+            'profile_image' => $profile_image ?? "",
+            'status' => $request->input('statusData'),
+            'branch_id' => $request->input('branch'),
+            'type' => $request->input('type'),
+        ]);
+
+
+        // Sync permissions (using permission names)
+        if ($request->filled('permissions')) {
+            $user->syncPermissions($request->input('permissions'));
+        }
+
+        return redirect()->route('admin.user.index')->with('success', 'User created successfully!');
+    }
 }

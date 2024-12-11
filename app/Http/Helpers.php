@@ -103,7 +103,7 @@ function get_asset($val = "", $file_exits_check = true, $no_image_available = nu
     } else {
         return asset($no_image_available);
     }
-} 
+}
 
 function print_title($title)
 {
@@ -183,6 +183,18 @@ function admin_modules()
             ],
         ],
         [
+            'route' => route('admin.permission.index'),
+            'name' => __('Permission'),
+            'icon' => 'kt-menu__link-icon fa fa-tasks',
+            'child' => [],
+            'all_routes' => [
+                'admin.permission.index',
+                'admin.permission.show',
+
+                'admin.permission.add',
+            ],
+        ],
+        [
             'route' => route('admin.branch.index'),
             'name' => __('Branch'),
             'icon' => 'kt-menu__link-icon fa fa-tasks',
@@ -214,7 +226,7 @@ function admin_modules()
                         'admin.account.add',
                     ],
                 ],
-               
+
                 [
                     'route' => route('admin.account-group.index'),
                     'name' => __('Ac Group'),
@@ -268,13 +280,13 @@ function admin_modules()
 
                 // 'admin.inquery.add',
             ],
-        ], 
+        ],
         [
             'route' => 'javascript:;',
             'name' => __('Billing'),
             'icon' => 'kt-menu__link-iconfas  fas fa-atom',
             'all_routes' => [
-                
+
             ],
             'child' => [
                 [
@@ -318,7 +330,7 @@ function admin_modules()
                     ],
                 ],
             ],
-        ], 
+        ],
         [
             'route' => 'javascript:;',
             'name' => __('Payments'),
@@ -381,7 +393,7 @@ function admin_modules()
                         'admin.product.add',
                     ],
                 ],
-               
+
                 [
                     'route' => route('admin.category.index'),
                     'name' => __('Categories'),
@@ -405,7 +417,7 @@ function admin_modules()
                     'name' => __('GST'),
                     'icon' => 'kt-menu__link-iconfas fas fa-money-bill',
                     'all_routes' => [
-                       
+
                     ],
                 ],
                 [
@@ -413,7 +425,7 @@ function admin_modules()
                     'name' => __('Stocks'),
                     'icon' => 'kt-menu__link-iconfas fas fa-shapes',
                     'all_routes' => [
-                       
+
                     ],
                 ],
                 [
@@ -421,7 +433,7 @@ function admin_modules()
                     'name' => __('Price Update'),
                     'icon' => 'kt-menu__link-iconfas far fa-life-ring',
                     'all_routes' => [
-                       
+
                     ],
                 ],
                 [
@@ -429,13 +441,13 @@ function admin_modules()
                     'name' => __('Stock Status'),
                     'icon' => 'kt-menu__link-iconfas fas fa-archive',
                     'all_routes' => [
-                       
+
                     ],
                 ],
-               
+
             ],
         ],
-      
+
         [
             'route' => 'javascript:;',
             'name' => __('General Settings'),
@@ -516,7 +528,7 @@ function breadcrumb($aBradcrumb = array())
 
             $content .=  '<li class="breadcrumb-item"> <a href="'.$link.'">'. ucfirst($key).'</a>';
 
-           
+
             // $content .= "<a href='" . $link . "' class='kt-subheader__breadcrumbs-link'>" . ucfirst($key) . "</a>";
             // if ($total_bread_crumbs != $i) {
             //     $content .= "<span class='kt-subheader__breadcrumbs-separator'></span>";
@@ -587,7 +599,7 @@ function send_push($user_id = 0, $data = [], $notification_entry = false)
     if ($push_data['user_id'] !== $push_data['from_user_id']) {
 //        $to_user_data = User::find($user_id);
 //        if ($to_user_data) {
-        $get_user_tokens = DeviceToken::get_user_tokens($user_id);        
+        $get_user_tokens = DeviceToken::get_user_tokens($user_id);
         $fire_base_header = ["Authorization: key=" . config('constants.firebase_server_key'), "Content-Type: application/json"];
         if (count($get_user_tokens)) {
             foreach ($get_user_tokens as $value) {
@@ -859,7 +871,7 @@ function partyCalculateClosing($id,$from=null,$to=null)
     $acc= Account::where('id',$id)->select('openingBalance','opening_type')->first();
 
     //=======New Calculation ====
-    
+
     if(!empty($acc->openingBalance)){ $opBal=$acc->openingBalance; }else{ $opBal=0;	}
     if($acc->opening_type=='Dr'){
         $closingBalance_new = $opBal + ($totalDebit-$totalCredit);
@@ -869,7 +881,7 @@ function partyCalculateClosing($id,$from=null,$to=null)
 
     if($closingBalance_new >= 0 ){
         $closingType='Dr';
-        
+
     }else{
         $closingType='Cr';
     }
@@ -904,7 +916,7 @@ function stockInfo($idqr){
             ->join('tbl_products_master AS p',function($join)
             {
               $join->on('p.id', '=', 'st.product_id');
-            }) 
+            })
             ->join('tbl_categories AS pc', function($join)
             {
               $join->on('pc.id', '=', 'st.category_id');
@@ -914,7 +926,7 @@ function stockInfo($idqr){
               $join->on('atr.id', '=', 'st.attribute_id');
             })
           ->where('id',$idqr)
-          ->orWhere('qrcode',$idqr) 
+          ->orWhere('qrcode',$idqr)
           ->select('st.*','p.code','p.name As prodName','atr.name as attributeName','pc.name AS catName')
           ->first();
 }
@@ -931,7 +943,7 @@ function stockCatAllVariant($idqr){
             ->join('tbl_products_master AS p',function($join)
             {
               $join->on('p.id', '=', 'st.product_id');
-            }) 
+            })
             ->join('tbl_categories AS pc', function($join)
             {
               $join->on('pc.id', '=', 'st.category_id');
@@ -947,7 +959,7 @@ function stockCatAllVariant($idqr){
           ->get();
 
     }
-    return $$allcat;     
+    return $$allcat;
 }
 
 
@@ -963,11 +975,11 @@ function createQrcodeForStock($stockId, $qrcode) {
 function getQrcodeByStockId($stockId) {
     // Retrieve a QR code by its stock_id
     $qrcode = \App\Models\QrCode::where('stock_id', $stockId)->first();
-    
+
     if ($qrcode) {
         return $qrcode->qrcode;  // Return the QR code string
     }
-    
+
     return null;  // Return null if no QR code is found
 }
 
@@ -976,11 +988,11 @@ function generateQRCodesForStock()
     $products =\App\Models\StockModel::where('qr_generated',0)
     ->where('current_stock','>',0)->chunk(10,function($stock){
         foreach ($stock as $st) {
-           
+
             // Generate a unique QR code for each stock item
             for($n=1;$n<=$st->current_stock;$n++){
                 $qrcodeString = generateUniqueQRCode($st);
-        
+
                 // Store the unique QR code string in the database
                 \App\Models\QrCode::create([
                     'stock_id' => $st->id,
@@ -992,7 +1004,7 @@ function generateQRCodesForStock()
         }
     });
 
-    
+
 }
 
 function base62_encode($number) {
@@ -1015,7 +1027,7 @@ function base62_encode($number) {
 function generateUniqueQRCode($stock)
 {
     // Combine the key fields into a single string. Include stock_id, product_id, category_id, attribute_id, and timestamp.
-    
+
     $data = implode('|', [
         $stock->id,               // stock_id
         $stock->product_id,       // product_id

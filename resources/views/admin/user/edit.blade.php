@@ -26,23 +26,22 @@
                 <div class="mb-3 row">
                     <label for="example-text-input" class="col-md-2 col-form-label"><span class="text-danger">*</span>First Name</label>
                     <div class="col-md-10">
-                        <input type="text" name="first_name" id="first_name" class="form-control" value="{{$data->first_name}}" maxlength="50">
+                        <input type="text" name="first_name" id="first_name" class="form-control" value="{{$data->name}}" maxlength="50">
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label for="example-text-input" class="col-md-2 col-form-label"><span class="text-danger">*</span>last Name</label>
                     <div class="col-md-10">
-                        <input type="text" name="last_name" id="last_name" class="form-control" value="{{$data->last_name}}" maxlength="50">
+                        <input type="text" name="last_name" id="last_name" class="form-control" value="{{$data->name}}" maxlength="50">
                     </div>
                 </div>
 
                 <div class="mb-3 row">
                     <label for="example-text-input" class="col-md-2 col-form-label"><span class="text-danger">*</span>Username</label>
                     <div class="col-md-10">
-                   
                              <input type="text" name="username" id="username" class="form-control" value="{{$data->username}}" maxlength="50">
                     </div>
-                   
+
                 </div>
 
                 <!-- <div class="mb-3 row">
@@ -59,11 +58,11 @@
                         <input type="email" name="email" id="email" class="form-control" value="{{$data->email}}">
                     </div>
                 </div>
-                
-                
-               
 
-                
+
+
+
+
 
 
                 <div class="kt-portlet__foot">
@@ -89,7 +88,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/js/intlTelInput-jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/css/intlTelInput.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/js/utils.js"></script>
-    
+
 <script>
         $(function () {
             let id = "{{$data->id}}";
