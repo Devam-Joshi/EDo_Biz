@@ -4,7 +4,7 @@
 
 <!-- DataTables -->
 <link href="{{ URL::asset('/assets/admin/vendors/general/datatable/jquery.dataTables.min.css') }}" id="bootstrap-style" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox/dist/jquery.fancybox.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox/dist/jquery.fancybox.min.css" />
 @endsection
 @section('content')
 
@@ -19,7 +19,7 @@
         <div class="card-body">
             <div class="mb-2 text-right">
                 <div class="wd-sl-modalbtn">
-                    <a href="{{route('admin.user.createNew')}}">
+                    <a href="{{route('admin.permission.create')}}">
                         <button type="button" class="btn btn-primary waves-effect waves-light"> Add
                         </button>
                     </a>
@@ -30,11 +30,7 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Profile Image</th>
-                            <th>name</th>
-                            <th>email</th>
-                            <th>number</th>
-                            <th>Status</th>
+                            <th>Name</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -62,33 +58,16 @@
             "order": [
                 [0, "DESC"]
             ],
-            "ajax": "{{route('admin.user.listing')}}",
+            "ajax": "{{route('admin.permission.listing')}}",
             "columns": [{
-                    "data": "id",
-                    searchable: false,
-                    sortable: false
-                },
-                {
-                    "data": "profile_image",
-                    searchable: false,
-                    sortable: false
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    searchable: true,
+                    sortable: true
                 },
                 {
                     "data": "name",
-                    sortable: false
-                },
-                // {"data": "username", sortable: false},
-                {
-                    "data": "email",
-                    sortable: false
-                },
-                {
-                    "data": "mobile_number",
-                    sortable: false
-                },
-                {
-                    "data": "status",
-                    searchable: false,
+                    searchable: true,
                     sortable: false
                 },
                 {

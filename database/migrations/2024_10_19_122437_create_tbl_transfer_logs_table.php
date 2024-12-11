@@ -54,5 +54,3 @@ class CreateTransferLogsTable extends Migration
         Schema::dropIfExists('tbl_transfer_logs');
     }
 }
-
-};
