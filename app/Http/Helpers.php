@@ -3,6 +3,11 @@
 use App\DeviceToken;
 use App\PushLog;
 use App\User;
+use App\Models\SerialNo;
+use App\Models\Account;
+use App\Models\Payment;
+//use db;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -98,7 +103,7 @@ function get_asset($val = "", $file_exits_check = true, $no_image_available = nu
     } else {
         return asset($no_image_available);
     }
-} 
+}
 
 function print_title($title)
 {
@@ -178,6 +183,18 @@ function admin_modules()
             ],
         ],
         [
+            'route' => route('admin.permission.index'),
+            'name' => __('Permission'),
+            'icon' => 'kt-menu__link-icon fa fa-tasks',
+            'child' => [],
+            'all_routes' => [
+                'admin.permission.index',
+                'admin.permission.show',
+
+                'admin.permission.add',
+            ],
+        ],
+        [
             'route' => route('admin.branch.index'),
             'name' => __('Branch'),
             'icon' => 'kt-menu__link-icon fa fa-tasks',
@@ -187,6 +204,173 @@ function admin_modules()
                 'admin.branch.show',
 
                 'admin.branch.add',
+            ],
+        ],
+        [
+            'route' => 'javascript:;',
+            'name' => __('Account'),
+            'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+            'all_routes' => [
+                // 'admin.account.index',
+                // 'admin.account.show',
+                // 'admin.account.add',
+            ],
+            'child' => [
+                [
+                    'route' =>route('admin.account.index'),
+                    'name' => __('Account'),
+                    'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+                    'all_routes' => [
+                        'admin.account.index',
+                        'admin.account.show',
+                        'admin.account.add',
+                    ],
+                ],
+
+                [
+                    'route' => route('admin.account-group.index'),
+                    'name' => __('Ac Group'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-indent',
+                    'all_routes' => [
+                        'admin.account-group.index',
+                        'admin.account-group.show',
+                        'admin.account-group.add',
+                    ],
+                ],
+                [
+                    'route' =>route('admin.city.index'),
+                    'name' => __('Cities'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-bullseye',
+                    'all_routes' => [
+                        'admin.city.index',
+                        'admin.city.add',
+                    ],
+                ],
+            ],
+        ],
+        [
+            'route' => 'javascript:;',
+            'name' => __('Inquery'),
+            'icon' => 'kt-menu__link-icon far fa-comments',
+            'child' => [
+                [
+                    'route'=>route('admin.inquiry-new.index'),
+                    'name' => __('Fresh Leads'),
+                    'icon' => 'kt-menu__link-iconfas  fas fa-angle-double-down',
+                    'all_routes' => [
+                        'admin.inquiry-new.index',
+                        'admin.inquiry-new.show',
+                        'admin.inquiry-new.add',
+                    ],
+                ],
+                [
+                    'route' =>route('admin.inquiry.index'),
+                    'name' => __('Customer Inquery'),
+                    'icon' => 'kt-menu__link-iconfas  fa fa-question-circle',
+                    'all_routes' => [
+                        'admin.inquiry.index',
+                        'admin.inquiry.show',
+                        'admin.inquiry.add',
+                    ],
+                ],
+            ],
+            'all_routes' => [
+                // 'admin.inquery.index',
+                // 'admin.inquery.show',
+
+                // 'admin.inquery.add',
+            ],
+        ],
+        [
+            'route' => 'javascript:;',
+            'name' => __('Billing'),
+            'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+            'all_routes' => [
+
+            ],
+            'child' => [
+                [
+                    'route' =>route('admin.sale-order.index'),
+                    'name' => __('Sale Order'),
+                    'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+                    'all_routes' => [
+                        'admin.sale-order.index',
+                        'admin.sale-order.show',
+                        'admin.sale-order.add',
+                    ],
+                ],
+                [
+                    'route' => route('admin.sale.index'),
+                    'name' => __('Sale Bill'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-indent',
+                    'all_routes' => [
+                        'admin.sale.index',
+                        'admin.sale.show',
+                        'admin.sale.add',
+                    ],
+                ],
+                [
+                    'route' =>route('admin.purchase-order.index'),
+                    'name' => __('Purchase Order'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-bullseye',
+                    'all_routes' => [
+                        'admin.purchase-order.index',
+                        'admin.purchase-order.add',
+                        'admin.purchase-order.show',
+                    ],
+                ],
+                [
+                    'route' =>route('admin.purchase.index'),
+                    'name' => __('Purchase'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-bullseye',
+                    'all_routes' => [
+                        'admin.purchase.index',
+                        'admin.purchase.add',
+                        'admin.purchase.show',
+                    ],
+                ],
+            ],
+        ],
+        [
+            'route' => 'javascript:;',
+            'name' => __('Payments'),
+            'icon' => 'kt-menu__link-iconfas  fas fa-rupee-sign',
+            'all_routes' => [
+                // 'admin.account.index',
+                // 'admin.account.show',
+                // 'admin.account.add',
+            ],
+            'child' => [
+                [
+                    'route' =>route('admin.payment.inward.index'),
+                    'name' => __('Inward'),
+                    'icon' => 'kt-menu__link-iconfas  fas fa-angle-double-down',
+                    'all_routes' => [
+                        'admin.payment.inward.index',
+                        'admin.payment.inward.show',
+                        'admin.payment.inward.add',
+                    ],
+                ],
+                [
+                    'route' =>route('admin.payment.outward.index'),
+                    'name' => __('Outward'),
+                    'icon' => 'kt-menu__link-iconfas  fas fa-angle-double-up',
+                    'all_routes' => [
+                        'admin.payment.outward.index',
+                        'admin.payment.outward.show',
+                        'admin.payment.outward.add',
+                    ],
+                ],
+                [
+                    'route' => route('admin.payment.transfer.index'),
+                    'name' => __('Transfer'),
+                    'icon' => 'kt-menu__link-iconfas fa fa-exchange-alt',
+                    'all_routes' => [
+                        'admin.payment.transfer.index',
+                        'admin.payment.transfer.show',
+                        'admin.payment.transfer.add',
+                    ],
+                ],
             ],
         ],
         [
@@ -209,7 +393,7 @@ function admin_modules()
                         'admin.product.add',
                     ],
                 ],
-               
+
                 [
                     'route' => route('admin.category.index'),
                     'name' => __('Categories'),
@@ -233,7 +417,7 @@ function admin_modules()
                     'name' => __('GST'),
                     'icon' => 'kt-menu__link-iconfas fas fa-money-bill',
                     'all_routes' => [
-                       
+
                     ],
                 ],
                 [
@@ -241,7 +425,7 @@ function admin_modules()
                     'name' => __('Stocks'),
                     'icon' => 'kt-menu__link-iconfas fas fa-shapes',
                     'all_routes' => [
-                       
+
                     ],
                 ],
                 [
@@ -249,7 +433,7 @@ function admin_modules()
                     'name' => __('Price Update'),
                     'icon' => 'kt-menu__link-iconfas far fa-life-ring',
                     'all_routes' => [
-                       
+
                     ],
                 ],
                 [
@@ -257,13 +441,13 @@ function admin_modules()
                     'name' => __('Stock Status'),
                     'icon' => 'kt-menu__link-iconfas fas fa-archive',
                     'all_routes' => [
-                       
+
                     ],
                 ],
-               
+
             ],
         ],
-      
+
         [
             'route' => 'javascript:;',
             'name' => __('General Settings'),
@@ -288,10 +472,17 @@ function admin_modules()
                     'all_routes' => [
                         'admin.get_site_settings',
                     ],
+                ],
+                [
+                    'route' => route('admin.generate_stock_qrcode'),
+                    'name' => 'Generate Stock Qrcode',
+                    'icon' => '',
+                    'all_routes' => [
+                        'admin.generate_stock_qrcode',
+                    ],
                 ]
             ],
         ],
-        
         [
             'route' => route('front.logout'),
             'name' => __('Logout'),
@@ -337,7 +528,7 @@ function breadcrumb($aBradcrumb = array())
 
             $content .=  '<li class="breadcrumb-item"> <a href="'.$link.'">'. ucfirst($key).'</a>';
 
-           
+
             // $content .= "<a href='" . $link . "' class='kt-subheader__breadcrumbs-link'>" . ucfirst($key) . "</a>";
             // if ($total_bread_crumbs != $i) {
             //     $content .= "<span class='kt-subheader__breadcrumbs-separator'></span>";
@@ -408,7 +599,7 @@ function send_push($user_id = 0, $data = [], $notification_entry = false)
     if ($push_data['user_id'] !== $push_data['from_user_id']) {
 //        $to_user_data = User::find($user_id);
 //        if ($to_user_data) {
-        $get_user_tokens = DeviceToken::get_user_tokens($user_id);        
+        $get_user_tokens = DeviceToken::get_user_tokens($user_id);
         $fire_base_header = ["Authorization: key=" . config('constants.firebase_server_key'), "Content-Type: application/json"];
         if (count($get_user_tokens)) {
             foreach ($get_user_tokens as $value) {
@@ -636,4 +827,227 @@ function upload_base_64_img($base64 = "", $path = "uploads/product/")
         }
     }
     return $file;
+}
+
+function getNewSerialNo($type){
+    $billNo=SerialNo::where('name','=',$type)
+                    ->select('prefix','length','financialYear','next_number')
+                    ->first();
+        $next_number=str_pad($billNo->next_number, $billNo->length, "0", STR_PAD_LEFT);
+        return $billNo->prefix.$billNo->financialYear.$next_number;
+}
+
+function increaseSerialNo($type){
+    SerialNo::where('name','=',$type)->increment('next_number',1);
+}
+
+
+function partyCalculateClosing($id,$from=null,$to=null)
+{
+    $account=Account::where('id',$id)->first();
+    $april1=$_ENV['APP_YEAR'];
+    $fromDate=$april1;
+    $toDate=date('Y-m-d');
+
+    if(isset($from,$to) && !empty($from) && !empty($to)){
+        $fromDate=$from;
+        $toDate=$to;
+    }
+
+    $prevDate=date('Y-m-d',strtotime($fromDate.'-1 day'));
+    $totalDebit=Payment::where('party_id',$id)
+                    ->where('txn_type','debit')
+                    ->where('status',1)
+                    ->where('txn_date','>=',$april1)
+                    ->where('txn_date','<=',$toDate)
+                    ->sum('txn_amount');
+
+    $totalCredit=Payment::where('party_id',$id)
+                    ->where('txn_type','credit')
+                    ->where('status',1)
+                    ->where('txn_date','>=',$april1)
+                    ->where('txn_date','<=',$toDate)
+                    ->sum('txn_amount');
+    $acc= Account::where('id',$id)->select('openingBalance','opening_type')->first();
+
+    //=======New Calculation ====
+
+    if(!empty($acc->openingBalance)){ $opBal=$acc->openingBalance; }else{ $opBal=0;	}
+    if($acc->opening_type=='Dr'){
+        $closingBalance_new = $opBal + ($totalDebit-$totalCredit);
+    }else{
+        $closingBalance_new = $opBal - ($totalDebit-$totalCredit);
+    }
+
+    if($closingBalance_new >= 0 ){
+        $closingType='Dr';
+
+    }else{
+        $closingType='Cr';
+    }
+
+    $a['opening']=$acc->openingBalance;
+    $a['opening_type']=$acc->opening_type;
+    $a['debitTotal']=$totalDebit;
+    $a['creditTotal']=$totalCredit;
+    $a['closing']=$closingBalance_new;
+    $a['closing_type']=$closingType;
+    $a['showbalance']=accountBalanceView($closingBalance_new,$closingType);
+
+    return $a;
+}
+
+function accountBalanceView($amt,$type){
+    $amt=number_to_dec($amt);
+    if($type=='Dr'){
+        $html='<span class="text-success p-2 w-100">'.$amt.' '.$type.' <span class="badge badge-success">&darr;<span> </span>';
+    }else{
+        $html='<span class="text-danger p-2 w-100">'.$amt.' '.$type.' <span class="badge badge-danger">&uarr;<span><span>';
+    }
+    return $html;
+}
+
+function myDateFormat($datestring){
+    return date('d-M-Y',strtotime($datestring));
+};
+
+function stockInfo($idqr){
+    $st=DB::table('tbl_products_stock AS st')
+            ->join('tbl_products_master AS p',function($join)
+            {
+              $join->on('p.id', '=', 'st.product_id');
+            })
+            ->join('tbl_categories AS pc', function($join)
+            {
+              $join->on('pc.id', '=', 'st.category_id');
+            })
+            ->join('tbl_color AS atr', function($join)
+            {
+              $join->on('atr.id', '=', 'st.attribute_id');
+            })
+          ->where('id',$idqr)
+          ->orWhere('qrcode',$idqr)
+          ->select('st.*','p.code','p.name As prodName','atr.name as attributeName','pc.name AS catName')
+          ->first();
+}
+
+function stockCatAllVariant($idqr){
+    $st=DB::table('tbl_products_stock AS st')
+    ->where('id',$idqr)
+    ->orWhere('qrcode',$idqr)
+    ->first();
+    $allcat='';
+    if($st)
+    {
+        $allcat=DB::table('tbl_products_stock AS st')
+            ->join('tbl_products_master AS p',function($join)
+            {
+              $join->on('p.id', '=', 'st.product_id');
+            })
+            ->join('tbl_categories AS pc', function($join)
+            {
+              $join->on('pc.id', '=', 'st.category_id');
+            })
+            ->join('tbl_color AS atr', function($join)
+            {
+              $join->on('atr.id', '=', 'st.attribute_id');
+            })
+          ->where('st.product_id',$st->product_id)
+          ->where('st.category_id',$st->category_id)
+          ->where('st.status','1')
+          ->select('st.*','p.code','p.name As prodName','atr.name as attributeName','pc.name AS catName')
+          ->get();
+
+    }
+    return $$allcat;
+}
+
+
+//====Qrcode function =====
+function createQrcodeForStock($stockId, $qrcode) {
+    // Create a new record in the tbl_stock_qrcode table
+    \App\Models\QrCode::create([
+        'stock_id' => $stockId,
+        'qrcode' => $qrcode,
+    ]);
+}
+
+function getQrcodeByStockId($stockId) {
+    // Retrieve a QR code by its stock_id
+    $qrcode = \App\Models\QrCode::where('stock_id', $stockId)->first();
+
+    if ($qrcode) {
+        return $qrcode->qrcode;  // Return the QR code string
+    }
+
+    return null;  // Return null if no QR code is found
+}
+
+function generateQRCodesForStock()
+{
+    $products =\App\Models\StockModel::where('qr_generated',0)
+    ->where('current_stock','>',0)->chunk(10,function($stock){
+        foreach ($stock as $st) {
+
+            // Generate a unique QR code for each stock item
+            for($n=1;$n<=$st->current_stock;$n++){
+                $qrcodeString = generateUniqueQRCode($st);
+
+                // Store the unique QR code string in the database
+                \App\Models\QrCode::create([
+                    'stock_id' => $st->id,
+                    'qrcode' => $qrcodeString,
+                ]);
+            }
+            // Mark the product as having its QR code generated
+            $st->update(['qr_generated' => 1]);
+        }
+    });
+
+
+}
+
+function base62_encode($number) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $base = strlen($characters);
+    $result = '';
+
+    while ($number > 0) {
+        $remainder = $number % $base;
+        $result = $characters[$remainder] . $result;
+        $number = intdiv($number, $base);
+    }
+
+    return $result;
+}
+
+/**
+ * Generate a unique QR code string based on product attributes and a unique stock ID.
+ */
+function generateUniqueQRCode($stock)
+{
+    // Combine the key fields into a single string. Include stock_id, product_id, category_id, attribute_id, and timestamp.
+
+    $data = implode('|', [
+        $stock->id,               // stock_id
+        $stock->product_id,       // product_id
+        $stock->category_id,      // category_id
+        $stock->attribute_id,     // attribute_id
+        time()                       // Add current timestamp for uniqueness
+    ]);
+
+    // Create a unique hash of the combined string using crc32 (or any other hash function)
+    $hash = crc32($data);
+
+    // Convert the hash to a Base62 string for a compact representation
+    $encodedString = base62_encode($hash);
+
+    // Ensure the generated QR code is unique in the database
+    while (\App\Models\QrCode::where('qrcode', $encodedString)->exists()) {
+        // If a collision occurs, re-hash with an additional random number and re-encode
+        $hash = crc32($data . rand());
+        $encodedString = base62_encode($hash);
+    }
+
+    return $encodedString;
 }

@@ -17,6 +17,14 @@
     </div>
     <div class="card">
         <div class="card-body">
+            <div class="mb-2 text-right">
+                <div class="wd-sl-modalbtn">
+                    <a href="{{route('admin.user.createNew')}}">
+                        <button type="button" class="btn btn-primary waves-effect waves-light"> Add
+                        </button>
+                    </a>
+                </div>
+            </div>
             <div class="table-responsive ">
                 <table id="listResults" class="table dt-responsive mb-4  nowrap w-100 mb-">
                     <thead>

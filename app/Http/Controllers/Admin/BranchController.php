@@ -69,6 +69,7 @@ class BranchController extends WebController
         return redirect()->route('admin.branch.index');
     }
 
+
     /**
      * Display the specified resource.
      *
@@ -80,6 +81,7 @@ class BranchController extends WebController
         //
     }
 
+    //status 
     public function status_update($id = 0)
     {
         $data = ['status' => 0, 'message' => 'Branch Not Found'];

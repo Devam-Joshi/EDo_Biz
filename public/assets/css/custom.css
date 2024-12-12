@@ -118,7 +118,7 @@ label.switch:after{display: none;}
     border-left-color: #3b7ddd;
 }
 .navbar-brand-box img {
-    width: 70%;
+    width: 100%;
 }
 .wd-sl-driveruser {
     width: 100%;
@@ -1439,7 +1439,7 @@ img.stripe-logo {
     color: #FFFFFF;
 }
 .navbar-brand-box img {
-    width: 30%;
+    width: 100%;
 }
 body[data-topbar="dark"] .app-search span, body[data-sidebar="dark"] .navbar-brand-box, body[data-sidebar="dark"] .vertical-menu,body[data-sidebar="dark"].vertical-collpsed .vertical-menu #sidebar-menu > ul > li:hover > a,body[data-sidebar="dark"].vertical-collpsed .vertical-menu #sidebar-menu > ul ul {
     background: #103664;
@@ -1447,4 +1447,10 @@ body[data-topbar="dark"] .app-search span, body[data-sidebar="dark"] .navbar-bra
 .metismenu li.mm-active {
     background: linear-gradient( 90deg ,rgba(255,255,255,.1),rgba(255,255,255,.0875) 50%,transparent);
     border-left-color: #ffffff;
+}
+.hide{
+    display:none;
+}
+.show{
+    display:block;
 }

@@ -6,11 +6,16 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "brian2694/laravel-toastr": "^5.59",
         "laravel/framework": "^11.9",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "orangehill/iseed": "^3.0",
+        "spatie/laravel-permission": "^6.10",
+        "yajra/laravel-datatables-oracle": "11.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "kitloong/laravel-migrations-generator": "^7.0",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
