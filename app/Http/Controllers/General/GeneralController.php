@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class GeneralController extends WebController
 {
@@ -24,21 +25,37 @@ class GeneralController extends WebController
 
     public function login(Request $request)
     {
-        $remember = ($request->remember) ? true : false;
-        $request->validate(['username' => 'required', 'password' => 'required']);
-        $find_field = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? "email" : "username";
-        $creds = [$find_field => $request->username, 'password' => $request->password, 'status' => 'active'];
+        // Check if "remember me" is selected
+        $remember = $request->remember ? true : false;
+
+        // Validate the request inputs
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+
+        // Determine whether the username is an email or username
+        $find_field = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        // Prepare the credentials array
+        $creds = [
+            $find_field => $request->username,
+            'password' => $request->password,
+        ];
+        // Attempt login
         if (Auth::attempt($creds, $remember)) {
             return redirect()->route(getDashboardRouteName());
-        } else {
-            if ($find_field == "username") {
-                flash_session('error', 'Please enter valid username or password');
-            } else {
-                flash_session('error', 'Please enter valid email or password');
-            }
         }
+        // Flash appropriate error message on failure
+        $error_message = $find_field === 'username'
+            ? 'Please enter a valid username or password.'
+            : 'Please enter a valid email or password.';
+        session()->flash('error', $error_message);
+
+        // Redirect back to the login page
         return redirect()->back();
     }
+
 
     public function Panel_Pass_Forget()
     {
@@ -55,8 +72,9 @@ class GeneralController extends WebController
     }
 
 
-    public function totalusers(){
-        $users = User::select(DB::raw('date(created_at) as userdate'),'created_at',DB::raw('count(id) as totaluser'))->where('type','user')->groupBy('userdate')->get();
+    public function totalusers()
+    {
+        $users = User::select(DB::raw('date(created_at) as userdate'), 'created_at', DB::raw('count(id) as totaluser'))->where('type', 'user')->groupBy('userdate')->get();
 
         $maindata = [];
         // echo $current_date_time = Carbon::now()->toDateTimeString();
@@ -64,16 +82,16 @@ class GeneralController extends WebController
         // die;
 
 
-        if(count($users) > 0){
-             foreach( $users as $user) {
+        if (count($users) > 0) {
+            foreach ($users as $user) {
 
-                 $detail=  [];
-                  $detail[]= strtotime($user->userdate.' 23:00:00') * 1000;
-                  $detail[]= $user->totaluser;
-                 $maindata[] = $detail;
-             }
+                $detail = [];
+                $detail[] = strtotime($user->userdate . ' 23:00:00') * 1000;
+                $detail[] = $user->totaluser;
+                $maindata[] = $detail;
+            }
         }
-         return $maindata;
+        return $maindata;
     }
 
 
@@ -191,14 +209,14 @@ class GeneralController extends WebController
     {
         $user_data = $request->user();
         $rules = [
-            'profile_image' => ['file', 'image'], 
+            'profile_image' => ['file', 'image'],
             'name' => ['required', 'max:255'],
             'username' => ['required', 'max:255', Rule::unique('users')->ignore($user_data->id)->whereNull('deleted_at')],
             'email' => ['required', 'max:255', Rule::unique('users')->ignore($user_data->id)->whereNull('deleted_at')],
         ];
         $req = $request->validate($rules);
 
-       
+
 
         $user_data->update([
             'name' => $request->name,
@@ -207,7 +225,7 @@ class GeneralController extends WebController
         ]);
         $profile_image = $user_data->getRawOriginal('profile_image');
 
-        
+
         if ($request->hasFile('profile_image')) {
             $up = upload_file('profile_image', 'user_profile_image');
             if ($up) {
@@ -224,14 +242,14 @@ class GeneralController extends WebController
 
     public function forgot_password_view($token)
     {
-//        $user = User::where(['status' => 'active', 'reset_token' => $token])->first();
+        //        $user = User::where(['status' => 'active', 'reset_token' => $token])->first();
 //        if ($user) {
         return view('general.reset_password', [
             'token' => $token,
             'header_panel' => false,
             'title' => 'Password reset',
         ]);
-//        }
+        //        }
 //        error_session('Invalid password token');
 //        return redirect()->route('admin.login');
     }
