@@ -19,7 +19,6 @@ class IsAdmin
         if (!$request->user()) {
             return redirect()->route('admin.login');
         } elseif (in_array($request->user()->type, ['admin', 'local_admin','user'])) {
-            // dd("Hola");
             return $next($request);
         } else {
             return redirect()->route(getDashboardRouteName());
