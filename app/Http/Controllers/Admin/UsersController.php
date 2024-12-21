@@ -7,7 +7,9 @@ use App\User;
 use App\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Models\Permission;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
 class UsersController extends WebController
 {
     public function index()
@@ -114,10 +116,16 @@ class UsersController extends WebController
     public function edit($id)
     {
         $data = User::find($id);
+        $groupedPermissions = Permission::all()->groupBy(function ($permission) {
+            return explode('_', $permission->name)[0]; // Extract category from permission name (first part before '_')
+        });
+        $userPermissions = $data->permissions->pluck('name')->toArray();
         if ($data) {
             $title = "Update user";
             return view('admin.user.edit', [
                 'title' => $title,
+                'groupedPermissions' => $groupedPermissions,
+                'userPermissions' => $userPermissions,
                 'data' => $data,
                 'breadcrumb' => breadcrumb([
                     'User' => route('admin.user.index'),
@@ -131,87 +139,90 @@ class UsersController extends WebController
 
     public function update(Request $request, $id)
     {
-        $data = User::find($id);
-        if ($data) {
+        $user = User::findOrFail($id);
 
-            $request->validate([
-                'first_name' => ['required', 'max:255'],
-                'last_name' => ['required', 'max:255'],
-                //'country_code' => ['required'],
-                //'mobile' => ['required', Rule::unique('users', 'mobile')->ignore($id)->where('country_code', $request->country_code)->whereNull('deleted_at')],
-                'email' => ['required', 'email', Rule::unique('users')->ignore($id)->whereNull('deleted_at')],
-                'profile_image' => ['file', 'image'],
-            ]);
-            $profile_image = $data->getRawOriginal('profile_image');
-            if ($request->hasFile('profile_image')) {
-                $up = upload_file('profile_image', 'user_profile_image');
-                if ($up) {
-                    un_link_file($profile_image);
-                    $profile_image = $up;
-                }
+        // Handle the profile image update (if uploaded)
+        if ($request->hasFile('profile_image')) {
+            $profile_image = $request->profile_image;
+            $up = upload_file('profile_image', 'user_profile_image');
+            if ($up) {
+                un_link_file($profile_image); // Remove old profile image if necessary
+                $profile_image = $up; // Assign the new profile image path
             }
-            $userdata = [
-                'email' => $request->email,
-                'profile_image' => $profile_image,
-                'name' => $request->first_name . ' ' . $request->last_name,
-            ];
-            $data->update($userdata);
-            success_session('user updated successfully');
-        } else {
-            error_session('user not found');
+            $user->profile_image = $profile_image;
         }
-        return redirect()->route('admin.user.index');
+
+        // Update the user data
+        $user->update([
+            'username' => $request->input('username'),
+            'email' => $request->input('email'),
+        ]);
+
+        // Sync permissions (similar to how it's done in create)
+        if ($request->filled('permissions')) {
+            $permissionIds = \Spatie\Permission\Models\Permission::whereIn('name', $request->input('permissions'))->pluck('id');
+            $user->syncPermissions($permissionIds);
+        }
+
+        return redirect()->route('admin.user.index')->with('success', 'User updated successfully!');
     }
+
 
 
     public function create()
     {
         $permissions = Permission::all(); // Fetch all permissions
         $branches = Branch::all();
-        return view('admin.user.create', compact('permissions','branches'));
+        $roles = Role::all();
+        $groupedPermissions = Permission::all()->groupBy(function ($permission) {
+            return explode('_', $permission->name)[0]; // Extract category from permission name (first part before '_')
+        });
+
+        return view('admin.user.create', compact('groupedPermissions', 'roles', 'branches'));
     }
 
     public function save(Request $request)
     {
-
-        // $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'username' => 'required|string|max:255|unique:users,username',
-        //     'password' => 'required|string|min:6',
-        //     'email' => 'required|email|max:255|unique:users,email',
-        //     'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        //     'statusData' => 'required|in:active,inactive',
-        //     'type' => 'required|in:admin,user',
-        //     'branch' => 'required',
-        //     'permissions' => 'array',
-        //     'permissions.*' => 'exists:permissions,name',
-        // ]);
-
+        // Handle file upload if there's a profile image
         if ($request->hasFile('profile_image')) {
             $profile_image = $request->profile_image;
             $up = upload_file('profile_image', 'user_profile_image');
             if ($up) {
-                un_link_file($profile_image);
-                $profile_image = $up;
+                un_link_file($profile_image); // Remove old profile image if necessary
+                $profile_image = $up; // Assign the new profile image path
             }
         }
+
+        // Create the user
         $user = User::create([
             'name' => $request->input('name'),
             'username' => $request->input('username'),
-            'password' => bcrypt($request->input('password')),
+            'password' => bcrypt($request->input('password')), // Hash password
             'email' => $request->input('email'),
-            'profile_image' => $profile_image ?? "",
-            'status' => $request->input('statusData'),
-            'branch_id' => $request->input('branch'),
-            'type' => $request->input('type'),
+            'profile_image' => $profile_image ?? "", // If no image, leave empty
+            'status' => $request->input('statusData'), // Active or inactive status
+            'branch_id' => $request->input('branch'), // Assign the selected branch
+            'type' => 'user', // Admin or User type
         ]);
 
-
-        // Sync permissions (using permission names)
-        if ($request->filled('permissions')) {
-            $user->syncPermissions($request->input('permissions'));
+        // Assign the role to the user using Spatie's helper method
+        if ($request->filled('role')) {
+            $role = Role::findById($request->input('role')); // Fetch the selected role by ID
+            if ($role) {
+                $user->assignRole($role); // Assign the role to the user
+            }
         }
 
+        // Sync permissions using Spatie's helper method
+        if ($request->filled('permissions')) {
+            // Fetch permission IDs based on the permission names from the request
+            $permissionIds = \Spatie\Permission\Models\Permission::whereIn('name', $request->input('permissions'))->pluck('id');
+
+            // Sync the permissions by their IDs
+            $user->syncPermissions($permissionIds);
+        }
+
+        // Return success message after creating the user
         return redirect()->route('admin.user.index')->with('success', 'User created successfully!');
     }
 }

@@ -140,7 +140,7 @@ function getDashboardRouteName()
     $name = 'front.dashboard';
     $user_data = Auth::user();
     if ($user_data) {
-        if (in_array($user_data->type, ["admin", "local_admin"])) {
+        if (in_array($user_data->type, ["admin", "local_admin",'user'])) {
             $name = 'admin.dashboard';
         }
     }
@@ -168,7 +168,9 @@ function admin_modules()
                 'admin.user.index',
                 'admin.user.show',
                 'admin.user.add',
-            ]
+            ],
+            'permission' => 'user_view', // Define permission for this menu item
+            'visible' => Auth::user()->hasPermissionTo('user_view') // Check if the user has permission
         ],
         [
             'route' => route('admin.role.index'),

@@ -18,11 +18,7 @@ class IsAdmin
     {
         if (!$request->user()) {
             return redirect()->route('admin.login');
-<<<<<<< HEAD
         } elseif (in_array($request->user()->type, ['admin', 'local_admin','user'])) {
-=======
-        } elseif (in_array($request->user()->type, ['admin', 'local_admin'])) {
->>>>>>> parent of 5811feb (Added Middleware)
             return $next($request);
         } else {
             return redirect()->route(getDashboardRouteName());

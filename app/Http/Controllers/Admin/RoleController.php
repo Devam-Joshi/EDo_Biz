@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\WebController;
-use App\Role;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends WebController
 {
@@ -15,11 +16,11 @@ class RoleController extends WebController
      *
      * @return \Illuminate\Http\Response
      */
-     public $role_obj;
-     public function __construct()
-     {
-         $this->role_obj = new Role();
-     }
+    public $role_obj;
+    public function __construct()
+    {
+        $this->role_obj = new Role();
+    }
 
     public function index()
     {
@@ -38,8 +39,12 @@ class RoleController extends WebController
      */
     public function create()
     {
+        $groupedPermissions = Permission::all()->groupBy(function ($permission) {
+            return explode('_', $permission->name)[0]; // Extract category from permission name
+        });
         return view('admin.role.create', [
             'title' => "Create Role",
+            'groupedPermissions' => $groupedPermissions,
             'breadcrumb' => breadcrumb([
                 'Role' => route('admin.role.index')
             ]),
@@ -55,17 +60,39 @@ class RoleController extends WebController
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'max:255'],
+            'name' => 'required|string|max:255',
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name',
         ]);
-        $return_data = $request->all();  
-        $roles = $this->role_obj->saveRole($return_data);
-        if (isset($roles) && !empty($roles)) {
-            success_session('Role created successfully');
+
+        if ($request->statusData == 'active') {
+            $status = 1;
         } else {
-            error_session('Role not created');
+            $status = 0;
         }
-        return redirect()->route('admin.role.index');
+
+        $role = Role::create(['name' => $request->name, 'status' => $status]);
+        $role->syncPermissions($request->permissions); // Assign permissions by name
+
+        return redirect()->route('admin.role.index')->with('success', 'Role created successfully.');
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,name',
+        ]);
+
+        $role = Role::findById($id);
+        $role->update(['name' => $request->name]);
+        $role->syncPermissions($request->permissions); // Assign permissions by name
+
+        return redirect()->route('admin.role.index')->with('success', 'Role updated successfully.');
+    }
+
+
 
     /**
      * Display the specified resource.
@@ -87,9 +114,13 @@ class RoleController extends WebController
     public function edit($id)
     {
         $data = $this->role_obj->find($id);
+        $groupedPermissions = Permission::all()->groupBy(function ($permission) {
+            return explode('_', $permission->name)[0]; // Extract category from permission name
+        });
         if (isset($data) && !empty($data)) {
             return view('admin.role.create', [
                 'title' => 'Category Update',
+                'groupedPermissions' => $groupedPermissions,
                 'breadcrumb' => breadcrumb([
                     'Category' => route('admin.role.index'),
                     'edit' => route('admin.role.edit', $id),
@@ -106,22 +137,22 @@ class RoleController extends WebController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'name' => ['required', 'max:255'],
-        ]);
-        $categories = $this->role_obj->find($id);
-        if(isset($categories) && !empty($categories)){
-            $return_data = $request->all();
-            $this->role_obj->saveRole($return_data,$id,$categories);
-            success_session('Role updated successfully');
-        }
-        else{
-            error_session('Role not found');
-        }
-        return redirect()->route('admin.role.index');
-    }
+    // public function update(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'name' => ['required', 'max:255'],
+    //     ]);
+    //     $categories = $this->role_obj->find($id);
+    //     if(isset($categories) && !empty($categories)){
+    //         $return_data = $request->all();
+    //         $this->role_obj->saveRole($return_data,$id,$categories);
+    //         success_session('Role updated successfully');
+    //     }
+    //     else{
+    //         error_session('Role not found');
+    //     }
+    //     return redirect()->route('admin.role.index');
+    // }
 
     /**
      * Remove the specified resource from storage.
@@ -153,7 +184,7 @@ class RoleController extends WebController
                     ],
                     'checked' => ($row->status == 'active') ? 'checked' : ''
                 ];
-                return  $this->generate_switch($param);
+                return $this->generate_switch($param);
             })
             ->addColumn('action', function ($row) {
                 $param = [
@@ -166,7 +197,7 @@ class RoleController extends WebController
                 ];
                 return $this->generate_actions_buttons($param);
             })
-            ->rawColumns(["status","action"])
+            ->rawColumns(["status", "action"])
             ->make(true);
     }
 
@@ -181,5 +212,19 @@ class RoleController extends WebController
             $data['message'] = 'Role status updated';
         }
         return $data;
+    }
+
+    public function getPermissionsForRole(Request $request)
+    {
+        $roleId = $request->input('role_id');
+        $role = Role::find($roleId);
+
+        if ($role) {
+            // Get the permissions associated with the selected role
+            $permissions = $role->permissions->pluck('name')->toArray();
+            return response()->json(['permissions' => $permissions]);
+        }
+
+        return response()->json(['permissions' => []]);
     }
 }

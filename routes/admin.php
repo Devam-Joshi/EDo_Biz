@@ -41,8 +41,10 @@ Route::group(['middleware' => 'Is_Admin'], function () {
         Route::resource('category', 'CategoryController');
 
         // Role Controller
-        Route::get('role/status_update/{id}', 'RoleController@status_update')->name('role.status_update');
+        Route::post('role/status_update', 'RoleController@status_update')->name('role.status_update');
         Route::get('role/listing', 'RoleController@listing')->name('role.listing');
+        Route::get('role/permissions', 'RoleController@getPermissionsForRole')->name('role.permissions');
+
         Route::resource('role', 'RoleController');
 
         // Permission Controller

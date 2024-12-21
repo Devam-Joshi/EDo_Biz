@@ -84,5 +84,7 @@
             ]
         });
     });
+
+
 </script>
 @endsection
