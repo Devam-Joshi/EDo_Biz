@@ -157,7 +157,8 @@ function admin_modules()
             'child' => [],
             'all_routes' => [
                 'admin.dashboard',
-            ]
+            ],
+            'visible' => true
         ],
         [
             'route' => route('admin.user.index'),
@@ -180,9 +181,9 @@ function admin_modules()
             'all_routes' => [
                 'admin.role.index',
                 'admin.role.show',
-
                 'admin.role.add',
             ],
+            'visible' => Auth::user()->hasPermissionTo('role_view')
         ],
         [
             'route' => route('admin.permission.index'),
@@ -195,6 +196,7 @@ function admin_modules()
 
                 'admin.permission.add',
             ],
+            'visible' => Auth::user()->hasPermissionTo(permission: 'permission_view')
         ],
         [
             'route' => route('admin.branch.index'),
@@ -207,6 +209,7 @@ function admin_modules()
 
                 'admin.branch.add',
             ],
+            'visible' => Auth::user()->hasPermissionTo(permission: 'role_view')
         ],
         [
             'route' => 'javascript:;',
@@ -217,11 +220,13 @@ function admin_modules()
                 // 'admin.account.show',
                 // 'admin.account.add',
             ],
+            'visible' => true,
             'child' => [
                 [
                     'route' =>route('admin.account.index'),
                     'name' => __('Account'),
                     'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.account.index',
                         'admin.account.show',
@@ -233,6 +238,7 @@ function admin_modules()
                     'route' => route('admin.account-group.index'),
                     'name' => __('Ac Group'),
                     'icon' => 'kt-menu__link-iconfas fa fa-indent',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.account-group.index',
                         'admin.account-group.show',
@@ -242,6 +248,7 @@ function admin_modules()
                 [
                     'route' =>route('admin.city.index'),
                     'name' => __('Cities'),
+                    'visible' => true,
                     'icon' => 'kt-menu__link-iconfas fa fa-bullseye',
                     'all_routes' => [
                         'admin.city.index',
@@ -259,6 +266,7 @@ function admin_modules()
                     'route'=>route('admin.inquiry-new.index'),
                     'name' => __('Fresh Leads'),
                     'icon' => 'kt-menu__link-iconfas  fas fa-angle-double-down',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.inquiry-new.index',
                         'admin.inquiry-new.show',
@@ -269,6 +277,7 @@ function admin_modules()
                     'route' =>route('admin.inquiry.index'),
                     'name' => __('Customer Inquery'),
                     'icon' => 'kt-menu__link-iconfas  fa fa-question-circle',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.inquiry.index',
                         'admin.inquiry.show',
@@ -276,6 +285,7 @@ function admin_modules()
                     ],
                 ],
             ],
+            'visible' => true,
             'all_routes' => [
                 // 'admin.inquery.index',
                 // 'admin.inquery.show',
@@ -290,11 +300,14 @@ function admin_modules()
             'all_routes' => [
 
             ],
+            'visible' => true,
             'child' => [
                 [
                     'route' =>route('admin.sale-order.index'),
                     'name' => __('Sale Order'),
                     'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+
+                    'visible' => true,
                     'all_routes' => [
                         'admin.sale-order.index',
                         'admin.sale-order.show',
@@ -305,6 +318,7 @@ function admin_modules()
                     'route' => route('admin.sale.index'),
                     'name' => __('Sale Bill'),
                     'icon' => 'kt-menu__link-iconfas fa fa-indent',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.sale.index',
                         'admin.sale.show',
@@ -315,6 +329,7 @@ function admin_modules()
                     'route' =>route('admin.purchase-order.index'),
                     'name' => __('Purchase Order'),
                     'icon' => 'kt-menu__link-iconfas fa fa-bullseye',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.purchase-order.index',
                         'admin.purchase-order.add',
@@ -325,6 +340,7 @@ function admin_modules()
                     'route' =>route('admin.purchase.index'),
                     'name' => __('Purchase'),
                     'icon' => 'kt-menu__link-iconfas fa fa-bullseye',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.purchase.index',
                         'admin.purchase.add',
@@ -342,11 +358,13 @@ function admin_modules()
                 // 'admin.account.show',
                 // 'admin.account.add',
             ],
+            'visible' => true,
             'child' => [
                 [
                     'route' =>route('admin.payment.inward.index'),
                     'name' => __('Inward'),
                     'icon' => 'kt-menu__link-iconfas  fas fa-angle-double-down',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.payment.inward.index',
                         'admin.payment.inward.show',
@@ -357,6 +375,7 @@ function admin_modules()
                     'route' =>route('admin.payment.outward.index'),
                     'name' => __('Outward'),
                     'icon' => 'kt-menu__link-iconfas  fas fa-angle-double-up',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.payment.outward.index',
                         'admin.payment.outward.show',
@@ -365,6 +384,7 @@ function admin_modules()
                 ],
                 [
                     'route' => route('admin.payment.transfer.index'),
+                    'visible' => true,
                     'name' => __('Transfer'),
                     'icon' => 'kt-menu__link-iconfas fa fa-exchange-alt',
                     'all_routes' => [
@@ -384,11 +404,13 @@ function admin_modules()
                 // 'admin.user.show',
                 // 'admin.user.add',
             ],
+            'visible' => true,
             'child' => [
                 [
                     'route' =>route('admin.product.index'),
                     'name' => __('Products'),
                     'icon' => 'kt-menu__link-iconfas  fas fa-atom',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.product.index',
                         'admin.product.show',
@@ -400,6 +422,7 @@ function admin_modules()
                     'route' => route('admin.category.index'),
                     'name' => __('Categories'),
                     'icon' => 'kt-menu__link-iconfas fa fa-indent',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.category.index',
                         'admin.category.show',
@@ -410,6 +433,7 @@ function admin_modules()
                     'route' =>route('admin.color.index'),
                     'name' => __('Colors'),
                     'icon' => 'kt-menu__link-iconfas fa fa-bullseye',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.color.index',
                     ],
@@ -418,6 +442,7 @@ function admin_modules()
                     'route' => 'javascript:;',
                     'name' => __('GST'),
                     'icon' => 'kt-menu__link-iconfas fas fa-money-bill',
+                    'visible' => true,
                     'all_routes' => [
 
                     ],
@@ -426,6 +451,7 @@ function admin_modules()
                     'route' => 'javascript:;',
                     'name' => __('Stocks'),
                     'icon' => 'kt-menu__link-iconfas fas fa-shapes',
+                    'visible' => true,
                     'all_routes' => [
 
                     ],
@@ -434,6 +460,7 @@ function admin_modules()
                     'route' => 'javascript:;',
                     'name' => __('Price Update'),
                     'icon' => 'kt-menu__link-iconfas far fa-life-ring',
+                    'visible' => true,
                     'all_routes' => [
 
                     ],
@@ -442,6 +469,7 @@ function admin_modules()
                     'route' => 'javascript:;',
                     'name' => __('Stock Status'),
                     'icon' => 'kt-menu__link-iconfas fas fa-archive',
+                    'visible' => true,
                     'all_routes' => [
 
                     ],
@@ -458,10 +486,12 @@ function admin_modules()
                 'admin.get_update_password',
                 'admin.get_site_settings',
             ],
+            'visible' => true,
             'child' => [
                 [
                     'route' => route('admin.get_update_password'),
                     'name' => 'Change Password',
+                    'visible' => true,
                     'icon' => '',
                     'all_routes' => [
                         'admin.get_update_password',
@@ -470,6 +500,7 @@ function admin_modules()
                 [
                     'route' => route('admin.get_site_settings'),
                     'name' => 'Site Settings',
+                    'visible' => true,
                     'icon' => '',
                     'all_routes' => [
                         'admin.get_site_settings',
@@ -479,6 +510,7 @@ function admin_modules()
                     'route' => route('admin.generate_stock_qrcode'),
                     'name' => 'Generate Stock Qrcode',
                     'icon' => '',
+                    'visible' => true,
                     'all_routes' => [
                         'admin.generate_stock_qrcode',
                     ],
@@ -491,6 +523,7 @@ function admin_modules()
             'icon' => 'kt-menu__link-icon fas fa-sign-out-alt',
             'child' => [],
             'all_routes' => [],
+            'visible' => true
         ],
     ];
 }
